@@ -121,14 +121,42 @@ def update_customer(customer_id):
     customer = Customer.query.get_or_404(customer_id)
 
     if request.method == 'POST':
+        name = request.form.get('name')
+        date_of_birth = request.form.get('date_of_birth')
+        phone_number = request.form.get('phone_number')
+        email = request.form.get('email')
+        company = request.form.get('company')
+
+        if not name:
+            flash('Поле "ФИО" обязательно для заполнения', 'danger')
+            return render_template('update_customer.html', customer=customer)
+
+        if not is_valid_phone(phone_number):
+            flash(
+                'Неверный формат номера телефона. Используйте российский формат', 'danger')
+            return redirect(url_for('add_customer'))
+
+        if not is_valid_date(date_of_birth):
+            flash('Неверный формат даты. Введите корректную дату', 'danger')
+            return redirect(url_for('add_customer'))
 
         try:
-            customer.name = request.form.get('name')
-            customer.date_of_birth = datetime.strptime(
-                request.form.get('date_of_birth'), '%Y-%m-%d').date()
-            customer.phone_number = request.form.get('phone_number')
-            customer.email = request.form.get('email')
-            customer.company = request.form.get('company')
+            date_obj = datetime.strptime(date_of_birth, '%Y-%m-%d').date()
+
+            existing_customer = Customer.query.filter(
+                Customer.phone_number == phone_number,
+                Customer.id != customer_id
+            ).first()
+
+            if existing_customer:
+                flash('Клиент с таким номером телефона уже существует', 'danger')
+                return render_template('update_customer.html', customer=customer)
+
+            customer.name = name
+            customer.date_of_birth = date_obj
+            customer.phone_number = phone_number
+            customer.email = email
+            customer.company = company
 
             db.session.commit()
             flash('Данные клиента успешно обновлены!', 'success')
