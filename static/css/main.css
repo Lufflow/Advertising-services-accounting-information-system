@@ -93,3 +93,9 @@ body {
 .btn {
     margin-bottom: 16px;
 }
+
+.alert-info {
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.15);
+    padding-left: 25px;
+    background-color: #00000015;
+}

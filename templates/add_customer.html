@@ -16,7 +16,7 @@
                     <label for="name" class="form-label">ФИО *</label>
                     <input type="text" class="form-control" id="name" name="name" 
                            value="{{ request.form.name if request.method == 'POST' }}" 
-                           required maxlength="125">
+                           required maxlength="125" placeholder="Иванов Иван Иванович">
                     <div class="form-text">Обязательное поле</div>
                 </div>
                 <!-- Второе поле -->

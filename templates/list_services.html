@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}
+Список услуг
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">Список доступных услуг</h1>
+
+    <div class="row">
+        {% for service in services %}
+        <div class="col-md-3 mb-4">
+            <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title">{{ service.service_name }}</h5>
+                    <p class="card-text">{{ service.description }}</p>
+                    <div class="mt-3">
+                        <p class="card-text"><strong>Стоимость: {{ service.price }} руб.</strong></p>
+                        <a href="{{ url_for('index') }}" class="btn btn-warning">Оформить заказ</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

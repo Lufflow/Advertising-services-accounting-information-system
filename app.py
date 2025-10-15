@@ -87,9 +87,38 @@ def list_customers():
     return render_template('list_customers.html', customers=customers)
 
 
-@app.route('/add-service')
+@app.route('/add-service', methods=['POST', 'GET'])
 def add_service():
+    if request.method == 'POST':
+        service_name = request.form.get('service_name')
+        description = request.form.get('description')
+        price = request.form.get('price')
+
+        try:
+            new_service = Service(
+                service_name=service_name,
+                description=description,
+                price=price
+            )
+
+            db.session.add(new_service)
+            db.session.commit()
+            flash('Новая услуга успешно добавлена!', 'success')
+            return redirect(url_for('list_services.html'))
+
+        except Exception as e:
+            db.session.rollback()
+            print(f"Ошибка при добавлении новой услуги: {e}")
+            flash('Произошла ошибка при добавлении новой услуги', 'danger')
+            return redirect(url_for('add_service'))
+
     return render_template('add_service.html')
+
+
+@app.route('/list-services')
+def list_services():
+    services = Service.query.all()
+    return render_template('list_services.html', services=services)
 
 
 if __name__ == "__main__":

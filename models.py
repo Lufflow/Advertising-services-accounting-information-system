@@ -23,7 +23,7 @@ class Service(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     service_name = db.Column(db.String(125), nullable=False)
-    description = db.Column(db.Text())
+    description = db.Column(db.Text(1000))
     price = db.Column(db.Float(), nullable=False, default='0')
 
 
