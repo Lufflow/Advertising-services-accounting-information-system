@@ -14,7 +14,7 @@
             <div class="card text-bg-success w-100">
                 <div class="card-header">Клиенты</div>
                 <div class="card-body text-center" >
-                    <a href="{{ url_for('add_customer') }}" class="btn btn-warning">Добавить клиента</a><br>
+                    <a href="{{ url_for('add_customer') }}" class="btn btn-warning">Добавить нового клиента</a><br>
                     <a href="{{ url_for('list_customers') }}" class="btn btn-info">Посмотреть список клиентов</a>
                 </div>
             </div>
@@ -24,7 +24,7 @@
             <div class="card text-bg-success w-100">
                 <div class="card-header">Услуги</div>
                 <div class="card-body text-center">
-                    <input class="btn btn-warning" type="submit" value="Добавить услугу"><br>
+                    <a href="{{ url_for('add_service') }}" class="btn btn-warning">Добавить новую услугу</a><br>
                     <input class="btn btn-info" type="submit" value="Посмотреть список услуг">
                 </div>
             </div>
