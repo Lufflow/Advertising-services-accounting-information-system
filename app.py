@@ -50,6 +50,18 @@ def add_customer():
         email = request.form.get('email')
         company = request.form.get('company')
 
+        if not name:
+            flash('Поле "ФИО" обязательно для заполнения', 'danger')
+            return render_template('add_customer.html', form_data=request.form)
+
+        if not phone_number:
+            flash('Поле "Номер телефона" обязательно для заполнения', 'danger')
+            return render_template('add_customer.html', form_data=request.form)
+
+        if not date_of_birth:
+            flash('Поле "Дата рождения" обязательно для заполнения', 'danger')
+            return render_template('add_customer.html', form_data=request.form)
+
         if not is_valid_phone(phone_number):
             flash(
                 'Неверный формат номера телефона. Используйте российский формат', 'danger')
@@ -58,6 +70,12 @@ def add_customer():
         if not is_valid_date(date_of_birth):
             flash('Неверный формат даты. Введите корректную дату', 'danger')
             return redirect(url_for('add_customer'))
+
+        existing_phone_number = Customer.query.filter_by(
+            phone_number=phone_number).first()
+        if existing_phone_number:
+            flash('Клиент с таким номером телефона уже существует', 'danger')
+            return render_template('add_customer.html', form_data=request.form)
 
         try:
             date_of_birth = datetime.strptime(date_of_birth, '%Y-%m-%d').date()
@@ -131,6 +149,14 @@ def update_customer(customer_id):
             flash('Поле "ФИО" обязательно для заполнения', 'danger')
             return render_template('update_customer.html', customer=customer)
 
+        if not phone_number:
+            flash('Поле "Номер телефона" обязательно для заполнения', 'danger')
+            return render_template('update_customer.html', customer=customer)
+
+        if not date_of_birth:
+            flash('Поле "Дата рождения" обязательно для заполнения', 'danger')
+            return render_template('update_customer.html', customer=customer)
+
         if not is_valid_phone(phone_number):
             flash(
                 'Неверный формат номера телефона. Используйте российский формат', 'danger')
@@ -140,17 +166,14 @@ def update_customer(customer_id):
             flash('Неверный формат даты. Введите корректную дату', 'danger')
             return redirect(url_for('add_customer'))
 
+        existing_phone_number = Customer.query.filter_by(
+            phone_number=phone_number).first()
+        if existing_phone_number:
+            flash('Клиент с таким номером телефона уже существует', 'danger')
+            return render_template('add_customer.html', form_data=request.form)
+
         try:
             date_obj = datetime.strptime(date_of_birth, '%Y-%m-%d').date()
-
-            existing_customer = Customer.query.filter(
-                Customer.phone_number == phone_number,
-                Customer.id != customer_id
-            ).first()
-
-            if existing_customer:
-                flash('Клиент с таким номером телефона уже существует', 'danger')
-                return render_template('update_customer.html', customer=customer)
 
             customer.name = name
             customer.date_of_birth = date_obj
