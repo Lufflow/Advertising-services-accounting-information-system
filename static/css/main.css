@@ -99,3 +99,15 @@ body {
     padding-left: 25px;
     background-color: #00000015;
 }
+
+.btn-group {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+}
+
+.btn {
+    padding: 8px 16px;
+    font-size: 1rem;
+    min-width: 120px;
+}

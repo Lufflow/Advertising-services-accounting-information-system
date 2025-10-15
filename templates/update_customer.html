@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Редактирование клиента
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Редактирование данных клиента</h1>
+    <form method="POST">
+        <div class="row">
+            <!-- Первая колонка -->
+            <div class="col-md-6">
+                <!-- Первое поле -->
+                <div class="mb-3">
+                    <label for="name" class="form-label">ФИО *</label>
+                    <input type="text" class="form-control" id="name" name="name" 
+                           value="{{ customer.name }}" 
+                           required maxlength="125" placeholder="Иванов Иван Иванович">
+                    <div class="form-text">Обязательное поле</div>
+                </div>
+                <!-- Второе поле -->
+                <div class="mb-3">
+                    <label for="phone_number" class="form-label">Номер телефона *</label>
+                    <input type="tel" class="form-control" id="phone_number" name="phone_number"
+                            value="{{ customer.phone_number }}"
+                           placeholder="79161234567 или +79161234567"
+                           required>
+                    <div class="form-text">Обязательное поле</div>
+                </div>
+                <!-- Третье поле -->
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email" name="email"
+                            value="{{ customer.email }}"
+                           placeholder="example@mail.ru">
+                    <div class="form-text">Необязательное поле</div>
+                </div>
+            </div>
+            <!-- Вторая колонка -->
+            <div class="col-md-6">
+                <!-- Первое поле -->
+                <div class="mb-3">
+                    <label for="date_of_birth" class="form-label">Дата рождения</label>
+                    <input type="date" class="form-control" id="date_of_birth" name="date_of_birth"
+                            value="{{ customer.date_of_birth }}" required>
+                    <div class="form-text">Обязательное поле</div>
+                </div>
+                <!-- Второе поле -->
+                <div class="mb-3">
+                    <label for="company" class="form-label">Компания</label>
+                    <input type="text" class="form-control" id="company" name="company"
+                            value="{{ customer.company }}"
+                           maxlength="100">
+                    <div class="form-text">Необязательное поле</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <button type="submit" class="btn btn-success">Добавить клиента</button>
+            <a href="{{ url_for('index') }}" class="btn btn-secondary">Отмена</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

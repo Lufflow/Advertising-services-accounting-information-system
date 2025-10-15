@@ -27,6 +27,7 @@ def health_check():
     return jsonify(status='OK' if overall_check else 'FAIL', details=health_status), status_code
 
 
+# <-- Базовый блок страницы
 @app.route('/')
 @app.route('/home')
 def index():
@@ -36,8 +37,10 @@ def index():
 @app.route('/about')
 def about():
     return render_template('about.html')
+# Базовый блок страницы -->
 
 
+# <-- Работа с клиентами
 @app.route('/add-customer', methods=['POST', 'GET'])
 def add_customer():
     if request.method == 'POST':
@@ -87,6 +90,60 @@ def list_customers():
     return render_template('list_customers.html', customers=customers)
 
 
+@app.route('/delete-customer/<int:customer_id>', methods=['POST'])
+def delete_customer(customer_id):
+    try:
+        customer = Customer.query.get_or_404(customer_id)
+
+        # Проверяем, есть ли связанные заказы
+        orders_count = Order.query.filter_by(customer_id=customer_id).count()
+
+        if orders_count > 0:
+            flash(
+                f'Невозможно удалить клиента. Существует {orders_count} связанных заказов.', 'warning')
+            return redirect(url_for('list_customers'))
+
+        db.session.delete(customer)
+        db.session.commit()
+
+        flash('Клиент успешно удален!', 'success')
+        return redirect(url_for('list_customers'))
+
+    except Exception as e:
+        db.session.rollback()
+        print(f"Ошибка при удалении клиента: {e}")
+        flash('Произошла ошибка при удалении клиента', 'danger')
+        return redirect(url_for('list_customers'))
+
+
+@app.route('/update-customer/<int:customer_id>', methods=['POST', 'GET'])
+def update_customer(customer_id):
+    customer = Customer.query.get_or_404(customer_id)
+
+    if request.method == 'POST':
+
+        try:
+            customer.name = request.form.get('name')
+            customer.date_of_birth = datetime.strptime(
+                request.form.get('date_of_birth'), '%Y-%m-%d').date()
+            customer.phone_number = request.form.get('phone_number')
+            customer.email = request.form.get('email')
+            customer.company = request.form.get('company')
+
+            db.session.commit()
+            flash('Данные клиента успешно обновлены!', 'success')
+            return redirect(url_for('list_customers'))
+
+        except Exception as e:
+            db.session.rollback()
+            print(f"Ошибка при редактировании клиента: {e}")
+            flash('Произошла ошибка при обновлении данных клиента', 'danger')
+
+    return render_template('update_customer.html', customer=customer)
+# Работа с клиентами -->
+
+
+# <-- Работа с услугами
 @app.route('/add-service', methods=['POST', 'GET'])
 def add_service():
     if request.method == 'POST':
@@ -119,6 +176,7 @@ def add_service():
 def list_services():
     services = Service.query.all()
     return render_template('list_services.html', services=services)
+# Работа с услугами -->
 
 
 if __name__ == "__main__":
