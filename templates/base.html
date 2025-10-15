@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <title>{% block title %}{% endblock %}</title>
+    <style>
+        .flash-container {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            width: 90%;
+            max-width: 600px;
+        }
+        .flash-container .alert {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Flash сообщения -->
+    <div class="container mt-3" id="flash-messages">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <div class="page">
+        <!-- Header -->
+        <div class="container">
+            <header class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom"> 
+                <div class="col-md-3 mb-2 mb-md-0"> 
+                    <a href="/" class="d-inline-flex link-body-emphasis text-decoration-none"> 
+                        <img class="header_img" src="{{ url_for('static', filename='img/flask_one.png')}}" alt="law">
+                        <span class="header_text" style="max-height: 50px; width: auto;"><h1>Ad Time!</h1></span>
+                    </a> 
+                </div> 
+                <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0"> 
+                    <li><a href="{{ url_for('index')}}" class="nav-link px-2 link-secondary"><h4>Главная</h4></a></li> 
+                    <li><a href="{{ url_for('about')}}" class="nav-link px-2"><h4>Об авторе</h4></a></li> 
+                </ul> 
+            </header>
+        </div>
+
+        <!-- Content -->
+        <main class="content">
+            <div class="container">
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <div class="container"> 
+            <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top"> 
+                <div class="col-md-4 d-flex align-items-center"> 
+                    <a href="/" class="mb-3 me-2 mb-md-0 text-body-secondary text-decoration-none lh-1" aria-label="Bootstrap"> 
+                        <img class="footer_img" src="{{ url_for('static', filename='img/flask_one.png')}}" alt="law">
+                    </a> 
+                    <span class="mb-3 mb-md-0 text-body-secondary">© 2025 Ad Time!</span> 
+                </div> 
+                <ul class="nav col-md-4 justify-content-end list-unstyled d-flex"> 
+                    <li class="ms-3">
+                        <a class="text-body-secondary" href="https://t.me/amidamaru_soul" aria-label="Telegram">
+                            <img class="footer_tg_img" src="{{ url_for('static', filename='img/Telegram_Messenger.png')}}" alt="Telegram">
+                        </a>
+                    </li> 
+                </ul> 
+            </footer> 
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

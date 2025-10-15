@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Список клиентов
+{% endblock %}
+
+
+{% block content %}
+<h1>Список клиентов</h1>
+
+<table class="table mt-5 table-bordered table-striped table-hover">
+    <thead class="table-dark">
+        <tr>
+            <th>ФИО</th>
+            <th>Номер телефона</th>
+            <th>Электронная почта</th>
+            <th>Компания</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for customer in customers %}
+        <tr>
+            <td>{{ customer.name }}</td>
+            <td>{{ customer.phone_number }}</td>
+            <td>{{ customer.email }}</td>
+            <td>{{ customer.company }}</td>
+        </tr>
+        {% endfor %}
+        </html>
+</table> 
+
+{% endblock %}

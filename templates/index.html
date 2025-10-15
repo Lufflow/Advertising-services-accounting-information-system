@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Главная страница
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Главная страница</h1> 
+
+    <div class="row justify-content-between g-4">
+        <!-- Первая карточка -->
+        <div class="col-md-3 d-flex"> 
+            <div class="card text-bg-success w-100">
+                <div class="card-header">Клиенты</div>
+                <div class="card-body text-center" >
+                    <a href="{{ url_for('add_customer') }}" class="btn btn-warning">Добавить клиента</a><br>
+                    <a href="{{ url_for('list_customers') }}" class="btn btn-info">Посмотреть список клиентов</a>
+                </div>
+            </div>
+        </div>
+        <!-- Вторая карточка -->
+        <div class="col-md-3 d-flex">
+            <div class="card text-bg-success w-100">
+                <div class="card-header">Услуги</div>
+                <div class="card-body text-center">
+                    <input class="btn btn-warning" type="submit" value="Добавить услугу"><br>
+                    <input class="btn btn-info" type="submit" value="Посмотреть список услуг">
+                </div>
+            </div>
+        </div>
+        <!-- Третья карточка -->
+        <div class="col-md-3 d-flex">
+            <div class="card text-bg-success w-100">
+                <div class="card-header">Заказы</div>
+                <div class="card-body text-center">
+                    <input class="btn btn-warning" type="submit" value="Оформить заказ"><br>
+                    <input class="btn btn-info" type="submit" value="Посмотреть список заказов">
+                </div>
+            </div>
+        </div>
+        <!-- Четвертая карточка -->
+        <div class="col-md-3 d-flex">
+    <div class="card text-bg-primary w-100">
+        <div class="card-header">Сервер</div>
+        <div class="card-body text-center">
+            <!-- Кнопка проверки состояния сервера -->
+            <a href="{{ url_for('health_check') }}" class="btn btn-light btn-lg" target="_blank">
+                Проверить состояние сервера
+            </a>
+        </div>
+    </div>
+</div>
+    </div>
+</div>
+{% endblock %}
