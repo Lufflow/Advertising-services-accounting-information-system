@@ -90,7 +90,7 @@ def list_customers():
     return render_template('list_customers.html', customers=customers)
 
 
-@app.route('/delete-customer/<int:customer_id>', methods=['POST'])
+@app.route('/delete-customer/<int:customer_id>', methods=['GET'])
 def delete_customer(customer_id):
     try:
         customer = Customer.query.get_or_404(customer_id)
@@ -201,6 +201,29 @@ def delete_service(service_id):
         print(f"Ошибка при удалении услуги: {e}")
         flash('Произошла ошибка при удалении услуги', 'danger')
         return redirect(url_for('list_services'))
+
+
+@app.route('/update-service/<int:service_id>', methods=['POST', 'GET'])
+def update_service(service_id):
+    service = Service.query.get_or_404(service_id)
+
+    if request.method == 'POST':
+
+        try:
+            service.service_name = request.form.get('service_name')
+            service.description = request.form.get('description')
+            service.price = request.form.get('price')
+
+            db.session.commit()
+            flash('Данные услуги успешно обновлены!', 'success')
+            return redirect(url_for('list_services'))
+
+        except Exception as e:
+            db.session.rollback()
+            print(f"Ошибка при редактировании услуги: {e}")
+            flash('Произошла ошибка при обновлении данных услуги', 'danger')
+
+    return render_template('update_service.html', service=service)
 # Работа с услугами -->
 
 

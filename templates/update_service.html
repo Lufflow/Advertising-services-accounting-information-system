@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}
+Редактирование услуги
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Редактирование данных услуги</h1>
+
+    <form method="POST">
+        <div class="row">
+            <!-- Первая колонка -->
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label for="service_name" class="form-label">Название услуги *</label>
+                    <input type="text" class="form-control" id="service_name" name="service_name" value="{{ service.service_name }}" required placeholder="Введите название">
+                    <div class="form-text">Обязательное поле</div>
+                </div>
+                <div class="mb-3">
+                    <label for="price" class="form-label">Стоимость услуги *</label>
+                    <input type="number" class="form-control form-control-lg" id="price" name="price" 
+                           value="{{ service.price }}" required min="0" step="0.01" placeholder="0.00">
+                    <div class="form-text">Введите услуги стоимость в рублях</div>
+                </div>
+                <div class="mb-3">
+                    <button type="submit" class="btn btn-success">Сохранить изменения</button>
+                    <a href="{{ url_for('list_services') }}" class="btn btn-secondary">Отмена</a>
+                </div>
+            </div>
+
+            <!-- Вторая колонка - поле цены -->
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label for="description" class="form-label">Описание услуги</label>
+                    <textarea class="form-control" id="description" name="description" rows="5" maxlength="1000" required placeholder="Введите описание">{{ service.description }}</textarea>
+                    <div class="form-text">Обязательное поле</div>
+                </div>
+            </div>
+        </div>
+        
+    </form>
+</div>
+{% endblock %}
+

@@ -29,7 +29,7 @@
                             </a>
                         </div>
                         <div class="d-flex gap-1">
-                            <a href="{{ url_for('index') }}" class="btn btn-warning flex-grow-1">Редактировать
+                            <a href="{{ url_for('update_service', service_id=service.id) }}" class="btn btn-warning flex-grow-1">Редактировать
                                 <img src="{{ url_for('static', filename='img/edit_pen.png') }}"  
                                         width="16" height="16" 
                                         style="mix-blend-mode: multiply;"
