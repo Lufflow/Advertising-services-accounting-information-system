@@ -176,6 +176,31 @@ def add_service():
 def list_services():
     services = Service.query.all()
     return render_template('list_services.html', services=services)
+
+
+@app.route('/delete-service/<int:service_id>', methods=['GET'])
+def delete_service(service_id):
+    try:
+        service = Service.query.get_or_404(service_id)
+
+        orders_count = Order.query.filter_by(service_id=service_id).count()
+
+        if orders_count > 0:
+            flash(
+                f'Невозможно удалить услугу. Существует {orders_count} связанных заказов.', 'warning')
+            return redirect(url_for('list_services'))
+
+        db.session.delete(service)
+        db.session.commit()
+
+        flash('Услуга успешно удалена!', 'success')
+        return redirect(url_for('list_services'))
+
+    except Exception as e:
+        db.session.rollback()
+        print(f"Ошибка при удалении услуги: {e}")
+        flash('Произошла ошибка при удалении услуги', 'danger')
+        return redirect(url_for('list_services'))
 # Работа с услугами -->
 
 
