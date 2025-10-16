@@ -34,8 +34,8 @@
             <div class="card text-bg-success w-100">
                 <div class="card-header">Заказы</div>
                 <div class="card-body text-center">
-                    <input class="btn btn-warning" type="submit" value="Оформить заказ"><br>
-                    <input class="btn btn-info" type="submit" value="Посмотреть список заказов">
+                    <a href="{{ url_for('add_order') }}" class="btn btn-warning">Оформить заказ</a><br>
+                    <a href="{{ url_for('index') }}" class="btn btn-info">Посмотреть список заказов</a>
                 </div>
             </div>
         </div>

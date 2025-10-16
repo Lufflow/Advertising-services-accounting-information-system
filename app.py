@@ -278,5 +278,40 @@ def update_service(service_id):
 # Работа с услугами -->
 
 
+# <-- Работа с заказами
+@app.route('/add-order', methods=['POST', 'GET'])
+def add_order():
+    customers = Customer.query.all()
+    services = Service.query.all()
+
+    if request.method == 'POST':
+        customer_id = request.form.get('customer_id')
+        service_id = request.form.get('service_id')
+        order_date = request.form.get('oder_date')
+
+        try:
+            order_date = datetime.now().date()
+
+            new_order = Order(
+                customer_id=customer_id,
+                service_id=service_id,
+                order_date=order_date
+            )
+
+            db.session.add(new_order)
+            db.session.commit()
+
+            flash('Заказ успешно оформлен', 'success')
+            return redirect(url_for('index'))
+
+        except Exception as e:
+            db.session.rollback()
+            print(f"Ошибка при оформлении заказа: {e}")
+            flash('Произошла ошибка при оформлении заказа', 'danger')
+            return render_template('add_order.html', customers=customers, services=services)
+
+    return render_template('add_order.html', customers=customers, services=services, now=datetime.now)
+
+
 if __name__ == "__main__":
     app.run(debug=True)
