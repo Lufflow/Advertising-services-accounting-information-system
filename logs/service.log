@@ -30,3 +30,45 @@
 2025-10-16 22:36:02,753 INFO: The page with the list of all orders has been loaded [in z:\Work Files\Programming\adverstising2\app.py:373]
 2025-10-16 22:36:03,923 INFO: Order successfully deleted. ID: 4, Customer: 1, Service: 1, Date: 2025-10-16 [in z:\Work Files\Programming\adverstising2\app.py:440]
 2025-10-16 22:36:03,933 INFO: The page with the list of all orders has been loaded [in z:\Work Files\Programming\adverstising2\app.py:373]
+2025-10-16 22:38:15,993 INFO: The new order creation page has loaded [in z:\Work Files\Programming\adverstising2\app.py:365]
+2025-10-16 23:10:13,165 INFO: The new service creation page has loaded [in z:\Work Files\Programming\adverstising2\app.py:253]
+2025-10-16 23:10:43,312 INFO: Start creating service [in z:\Work Files\Programming\adverstising2\app.py:208]
+2025-10-16 23:10:43,327 INFO: Service successfully created. ID: 6 [in z:\Work Files\Programming\adverstising2\app.py:239]
+2025-10-16 23:10:43,329 ERROR: Error creating service. ID: 6. Error: Could not build url for endpoint 'list_services.html'. Did you mean 'list_services' instead? [in z:\Work Files\Programming\adverstising2\app.py:247]
+Traceback (most recent call last):
+  File "z:\Work Files\Programming\adverstising2\app.py", line 243, in add_service
+    return redirect(url_for('list_services.html'))
+                    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\dpanu\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\helpers.py", line 239, in url_for
+    return current_app.url_for(
+           ~~~~~~~~~~~~~~~~~~~^
+        endpoint,
+        ^^^^^^^^^
+    ...<4 lines>...
+        **values,
+        ^^^^^^^^^
+    )
+    ^
+  File "C:\Users\dpanu\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 1121, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\dpanu\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 1110, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+        endpoint,
+    ...<3 lines>...
+        force_external=_external,
+    )
+  File "C:\Users\dpanu\AppData\Local\Programs\Python\Python313\Lib\site-packages\werkzeug\routing\map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'list_services.html'. Did you mean 'list_services' instead?
+2025-10-16 23:10:43,351 INFO: The new service creation page has loaded [in z:\Work Files\Programming\adverstising2\app.py:253]
+2025-10-16 23:11:40,184 INFO: The new service creation page has loaded [in z:\Work Files\Programming\adverstising2\app.py:253]
+2025-10-16 23:11:48,970 INFO: Start creating service [in z:\Work Files\Programming\adverstising2\app.py:208]
+2025-10-16 23:11:48,986 INFO: Service successfully created. ID: 7 [in z:\Work Files\Programming\adverstising2\app.py:239]
+2025-10-16 23:11:48,994 INFO: The page with a list of all services has been loaded [in z:\Work Files\Programming\adverstising2\app.py:261]
+2025-10-16 23:19:05,854 INFO: The page with the list of all orders has been loaded [in z:\Work Files\Programming\adverstising2\app.py:397]
+2025-10-16 23:19:09,310 INFO: The page with a list of all services has been loaded [in z:\Work Files\Programming\adverstising2\app.py:261]
+2025-10-16 23:19:11,781 WARNING: Attempt to delete a service associated with an order. ID: 1, Number of orders: 1. [in z:\Work Files\Programming\adverstising2\app.py:273]
+2025-10-16 23:19:11,788 INFO: The page with a list of all services has been loaded [in z:\Work Files\Programming\adverstising2\app.py:261]
+2025-10-16 23:29:02,919 INFO: Start editing service. ID: 2. [in z:\Work Files\Programming\adverstising2\app.py:267]
+2025-10-16 23:29:02,919 WARNING: Attempt to send an order with an empty order name field. Identifier: 2. [in z:\Work Files\Programming\adverstising2\app.py:271]

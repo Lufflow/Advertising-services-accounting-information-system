@@ -103,39 +103,6 @@ def add_customer():
     return render_template('add_customer.html')
 
 
-@app.route('/list-customers')
-def list_customers():
-    customers = Customer.query.all()
-    app.logger.info("The page with the list of all clients has been loaded")
-    return render_template('list_customers.html', customers=customers)
-
-
-@app.route('/delete-customer/<int:customer_id>', methods=['GET'])
-def delete_customer(customer_id):
-    try:
-        customer = Customer.query.get_or_404(customer_id)
-
-        # Проверяем, есть ли связанные заказы
-        orders_count = Order.query.filter_by(customer_id=customer_id).count()
-
-        if orders_count > 0:
-            flash(
-                f"Невозможно удалить клиента. У этого клиента оформленных заказов: {orders_count}", 'warning')
-            return redirect(url_for('list_customers'))
-
-        db.session.delete(customer)
-        db.session.commit()
-
-        flash("Клиент успешно удален!", 'success')
-        return redirect(url_for('list_customers'))
-
-    except Exception as e:
-        db.session.rollback()
-        print(f"Ошибка при удалении клиента: {e}")
-        flash("Произошла ошибка при удалении клиента", 'danger')
-        return redirect(url_for('list_customers'))
-
-
 @app.route('/update-customer/<int:customer_id>', methods=['POST', 'GET'])
 def update_customer(customer_id):
     customer = Customer.query.get_or_404(customer_id)
@@ -194,6 +161,39 @@ def update_customer(customer_id):
             flash("Произошла ошибка при обновлении данных клиента", 'danger')
 
     return render_template('update_customer.html', customer=customer)
+
+
+@app.route('/delete-customer/<int:customer_id>', methods=['GET'])
+def delete_customer(customer_id):
+    try:
+        customer = Customer.query.get_or_404(customer_id)
+
+        # Проверяем, есть ли связанные заказы
+        orders_count = Order.query.filter_by(customer_id=customer_id).count()
+
+        if orders_count > 0:
+            flash(
+                f"Невозможно удалить клиента. У этого клиента оформленных заказов: {orders_count}", 'warning')
+            return redirect(url_for('list_customers'))
+
+        db.session.delete(customer)
+        db.session.commit()
+
+        flash("Клиент успешно удален!", 'success')
+        return redirect(url_for('list_customers'))
+
+    except Exception as e:
+        db.session.rollback()
+        print(f"Ошибка при удалении клиента: {e}")
+        flash("Произошла ошибка при удалении клиента", 'danger')
+        return redirect(url_for('list_customers'))
+
+
+@app.route('/list-customers')
+def list_customers():
+    customers = Customer.query.all()
+    app.logger.info("The page with the list of all clients has been loaded")
+    return render_template('list_customers.html', customers=customers)
 # Работа с клиентами -->
 
 
@@ -205,15 +205,24 @@ def add_service():
         description = request.form.get('description')
         price = request.form.get('price')
 
+        app.logger.info(
+            f"Start creating service")
+
         if not service_name:
+            app.logger.warning(
+                f"Attempt to create a service with an empty service name field.")
             flash("Поле \"Название услуги\" обязательно для заполнения", 'danger')
             return render_template('add_service.html', form_data=request.form)
 
         if not description:
+            app.logger.warning(
+                f"Attempt to create a service with an empty service description field.")
             flash("Поле \"Описание услуги\" обязательно для заполнения", 'danger')
             return render_template('add_service.html', form_data=request.form)
 
         if not price:
+            app.logger.warning(
+                f"Attempt to create a service with an empty price field.")
             flash("Поле \"Стоимость\" обязательно для заполнения", 'danger')
             return render_template('add_service.html', form_data=request.form)
 
@@ -226,48 +235,24 @@ def add_service():
 
             db.session.add(new_service)
             db.session.commit()
+
+            app.logger.info(
+                f"Service successfully created. ID: {new_service.id}")
+
             flash("Новая услуга успешно добавлена!", 'success')
-            return redirect(url_for('list_services.html'))
+            return redirect(url_for('list_services'))
 
         except Exception as e:
             db.session.rollback()
+            app.logger.error(
+                f"Error creating service. ID: {new_service.id}. Error: {str(e)}", exc_info=True)
             print(f"Ошибка при добавлении новой услуги: {e}")
             flash("Произошла ошибка при добавлении новой услуги", 'danger')
             return redirect(url_for('add_service'))
 
+    app.logger.info("The new service creation page has loaded")
+
     return render_template('add_service.html')
-
-
-@app.route('/list-services')
-def list_services():
-    services = Service.query.all()
-    app.logger.info("The page with a list of all services has been loaded")
-    return render_template('list_services.html', services=services)
-
-
-@app.route('/delete-service/<int:service_id>', methods=['GET'])
-def delete_service(service_id):
-    try:
-        service = Service.query.get_or_404(service_id)
-
-        orders_count = Order.query.filter_by(service_id=service_id).count()
-
-        if orders_count > 0:
-            flash(
-                f"Невозможно удалить услугу. С этой услугой оформлено {orders_count} заказ(ов)", 'warning')
-            return redirect(url_for('list_services'))
-
-        db.session.delete(service)
-        db.session.commit()
-
-        flash("Услуга успешно удалена!", 'success')
-        return redirect(url_for('list_services'))
-
-    except Exception as e:
-        db.session.rollback()
-        print(f"Ошибка при удалении услуги: {e}")
-        flash("Произошла ошибка при удалении услуги", 'danger')
-        return redirect(url_for('list_services'))
 
 
 @app.route('/update-service/<int:service_id>', methods=['POST', 'GET'])
@@ -279,15 +264,24 @@ def update_service(service_id):
         description = request.form.get('description')
         price = request.form.get('price')
 
+        app.logger.info(
+            f"Start editing service. ID: {service_id}.")
+
         if not service_name:
+            app.logger.warning(
+                f"Attempt to send an serivce with an empty order name field. ID: {service_id}.")
             flash("Поле \"Название услуги\" обязательно для заполнения", 'danger')
             return render_template('update_service.html', service=service)
 
         if not description:
+            app.logger.warning(
+                f"Attempt to send an serivce with an empty order description field. ID: {service_id}.")
             flash("Поле \"Описание услуги\" обязательно для заполнения", 'danger')
             return render_template('update_service.html', service=service)
 
         if not price:
+            app.logger.warning(
+                f"Attempt to send an serivce with an empty order price field. ID: {service_id}.")
             flash("Поле \"Стоимость услуги\" обязательно для заполнения", 'danger')
             return render_template('update_service.html', service=service)
 
@@ -297,15 +291,58 @@ def update_service(service_id):
             service.price = price
 
             db.session.commit()
+            app.logger.info(
+                f"Service successfully updated. ID: {service.id}.")
             flash("Данные услуги успешно обновлены!", 'success')
             return redirect(url_for('list_services'))
 
         except Exception as e:
             db.session.rollback()
+            app.logger.error(
+                f"Service modification error. ID: {service_id}. Error: {str(e)}", exc_info=True)
             print(f"Ошибка при редактировании услуги: {e}")
             flash("Произошла ошибка при обновлении данных услуги", 'danger')
 
     return render_template('update_service.html', service=service)
+
+
+@app.route('/delete-service/<int:service_id>', methods=['GET'])
+def delete_service(service_id):
+    try:
+        service = Service.query.get_or_404(service_id)
+
+        orders_count = Order.query.filter_by(service_id=service_id).count()
+
+        if orders_count > 0:
+            app.logger.warning(
+                f"Attempt to delete a service associated with an order. ID: {service.id}, Number of orders: {orders_count}.")
+            flash(
+                f"Невозможно удалить услугу. С этой услугой оформлено {orders_count} заказ(ов)", 'warning')
+            return redirect(url_for('list_services'))
+
+        db.session.delete(service)
+        db.session.commit()
+
+        app.logger.info(
+            f"Service successfully deleted. ID: {service.id}.")
+
+        flash("Услуга успешно удалена!", 'success')
+        return redirect(url_for('list_services'))
+
+    except Exception as e:
+        db.session.rollback()
+        app.logger.error(
+            f"Error deleting service. ID: {service.id}. Error: {str(e)}", exc_info=True)
+        print(f"Ошибка при удалении услуги: {e}")
+        flash("Произошла ошибка при удалении услуги", 'danger')
+        return redirect(url_for('list_services'))
+
+
+@app.route('/list-services')
+def list_services():
+    services = Service.query.all()
+    app.logger.info("The page with a list of all services has been loaded")
+    return render_template('list_services.html', services=services)
 # Работа с услугами -->
 
 
@@ -365,13 +402,6 @@ def add_order():
     app.logger.info("The new order creation page has loaded")
 
     return render_template('add_order.html', customers=customers, services=services, now=datetime.now)
-
-
-@app.route('/list-ordres')
-def list_orders():
-    orders = Order.query.all()
-    app.logger.info("The page with the list of all orders has been loaded")
-    return render_template('list_orders.html', orders=orders)
 
 
 @app.route('/update-order/<int:order_id>', methods=['POST', 'GET'])
@@ -449,6 +479,14 @@ def delete_order(order_id):
         print(f"Ошибка при удалении заказа: {e}")
         flash("Произошла ошибка при удалении заказа", 'danger')
         return redirect(url_for('list_orders'))
+
+
+@app.route('/list-ordres')
+def list_orders():
+    orders = Order.query.all()
+    app.logger.info("The page with the list of all orders has been loaded")
+    return render_template('list_orders.html', orders=orders)
+# Работа с заказми -->
 
 
 if __name__ == "__main__":
