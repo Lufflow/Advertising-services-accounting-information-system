@@ -106,6 +106,7 @@ def add_customer():
 @app.route('/list-customers')
 def list_customers():
     customers = Customer.query.all()
+    app.logger.info("The page with the list of all clients has been loaded")
     return render_template('list_customers.html', customers=customers)
 
 
@@ -240,6 +241,7 @@ def add_service():
 @app.route('/list-services')
 def list_services():
     services = Service.query.all()
+    app.logger.info("The page with a list of all services has been loaded")
     return render_template('list_services.html', services=services)
 
 
@@ -318,11 +320,19 @@ def add_order():
         service_id = request.form.get('service_id')
         order_date = request.form.get('order_date')
 
+        app.logger.info(
+            f"Start creating order. Customer: {customer_id}, Service: {service_id}")
+
         if not customer_id:
+            app.logger.warning(
+                f"Attempt to create an order with empty fields. Customer: {customer_id}, Service: {service_id}")
             flash("Пожалуйста, выберите клиента", 'danger')
             return render_template('add_order.html', customers=customers, services=services, now=datetime.now)
 
         if not service_id:
+            app.logger.warning(
+                f"Attempt to create an order with empty fields. Customer: {customer_id}, Service: {service_id}")
+            flash("Пожалуйста, выберите клиента", 'danger')
             flash("Пожалуйста, выберите услугу", 'danger')
             return render_template('add_order.html', customers=customers, services=services, now=datetime.now)
 
@@ -338,14 +348,21 @@ def add_order():
             db.session.add(new_order)
             db.session.commit()
 
+            app.logger.info(
+                f"Order successfully created. ID: {new_order.id}, Customer: {customer_id}, Service: {service_id}, Date: {order_date}")
+
             flash("Заказ успешно оформлен", 'success')
             return redirect(url_for('index'))
 
         except Exception as e:
             db.session.rollback()
+            app.logger.error(
+                f"Error creating order. Customer: {customer_id}, Service: {service_id}. Error: {str(e)}", exc_info=True)
             print(f"Ошибка при оформлении заказа: {e}")
             flash("Произошла ошибка при оформлении заказа", 'danger')
             return render_template('add_order.html', customers=customers, services=services)
+
+    app.logger.info("The new order creation page has loaded")
 
     return render_template('add_order.html', customers=customers, services=services, now=datetime.now)
 
@@ -353,6 +370,7 @@ def add_order():
 @app.route('/list-ordres')
 def list_orders():
     orders = Order.query.all()
+    app.logger.info("The page with the list of all orders has been loaded")
     return render_template('list_orders.html', orders=orders)
 
 
@@ -367,11 +385,18 @@ def update_order(order_id):
         service_id = request.form.get('service_id')
         order_date = request.form.get('order_date')
 
+        app.logger.info(
+            f"Start editing order. Order: {order.id},Customer: {customer_id}, Service: {service_id}")
+
         if not customer_id:
+            app.logger.warning(
+                f"Attempt to edit an order with empty fields. Customer: {customer_id}, Service: {service_id}")
             flash("Пожалуйста, выберите клиента", 'danger')
             return render_template('update_order.html', order=order, customers=customers, services=services, now=datetime.now)
 
         if not service_id:
+            app.logger.warning(
+                f"Attempt to edit an order with empty fields. Customer: {customer_id}, Service: {service_id}")
             flash("Пожалуйста, выберите услугу", 'danger')
             return render_template('update_order.html', order=order, customers=customers, services=services, now=datetime.now)
 
@@ -385,14 +410,21 @@ def update_order(order_id):
 
             db.session.commit()
 
+            app.logger.info(
+                f"Order successfully updated. ID: {order.id}, Customer: {customer_id}, Service: {service_id}, Date: {order_date}")
+
             flash('Данные заказа успешно обновлены', 'success')
             return redirect(url_for('index'))
 
         except Exception as e:
             db.session.rollback()
+            app.logger.error(
+                f"Order modification error. Customer: {customer_id}, Service: {service_id}. Error: {str(e)}", exc_info=True)
             print(f"Ошибка при обновлении заказа: {e}")
             flash('Произошла ошибка при обновлении заказа', 'danger')
             return render_template('update_order.html', order=order, customers=customers, services=services, now=datetime.now)
+
+    app.logger.info("Order edit page loaded")
 
     return render_template('update_order.html', order=order, customers=customers, services=services, now=datetime.now)
 
@@ -405,11 +437,15 @@ def delete_order(order_id):
         db.session.delete(order)
         db.session.commit()
 
+        app.logger.info(
+            f"Order successfully deleted. ID: {order.id}, Customer: {order.customer_id}, Service: {order.service_id}, Date: {order.order_date}")
         flash("Заказ успешно удален!", 'success')
         return redirect(url_for('list_orders'))
 
     except Exception as e:
         db.session.rollback()
+        app.logger.error(
+            f"Error deleting order. ID: {order.id}, Customer: {order.customer_id}, Service: {order.service_id}. Error: {str(e)}", exc_info=True)
         print(f"Ошибка при удалении заказа: {e}")
         flash("Произошла ошибка при удалении заказа", 'danger')
         return redirect(url_for('list_orders'))
