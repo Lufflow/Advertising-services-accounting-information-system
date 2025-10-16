@@ -1,5 +1,5 @@
 import re
-from datetime import datetime
+from datetime import datetime, date
 
 
 def is_valid_phone(phone):
@@ -10,7 +10,18 @@ def is_valid_phone(phone):
 
 def is_valid_date(date_str):
     try:
-        date = datetime.strptime(date_str, '%Y-%m-%d').date()
-        return date <= datetime.now().date()
+        birth_date = datetime.strptime(date_str, '%Y-%m-%d').date()
+        today = datetime.now().date()
+
+        if birth_date > today:
+            return False, "Дата рождения не может быть в будущем"
+
+        age = today.year - birth_date.year
+
+        if today < birth_date.replace(year=today.year):
+            age -= 1
+
+        return age >= 18, "Клиент должен быть совершеннолетним (18 лет)"
+
     except ValueError:
         return False

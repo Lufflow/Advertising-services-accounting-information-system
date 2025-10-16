@@ -67,8 +67,9 @@ def add_customer():
                 "Неверный формат номера телефона. Используйте российский формат", 'danger')
             return redirect(url_for('add_customer'))
 
-        if not is_valid_date(date_of_birth):
-            flash("Неверный формат даты. Введите корректную дату", 'danger')
+        is_valid, message = is_valid_date(date_of_birth)
+        if not is_valid:
+            flash(message, 'danger')
             return redirect(url_for('add_customer'))
 
         existing_phone_number = Customer.query.filter_by(
@@ -162,8 +163,9 @@ def update_customer(customer_id):
                 "Неверный формат номера телефона. Используйте российский формат", 'danger')
             return redirect(url_for('add_customer'))
 
-        if not is_valid_date(date_of_birth):
-            flash("Неверный формат даты. Введите корректную дату", 'danger')
+        is_valid, message = is_valid_date(date_of_birth)
+        if not is_valid:
+            flash(message, 'danger')
             return redirect(url_for('add_customer'))
 
         existing_phone_number = Customer.query.filter_by(
@@ -201,6 +203,18 @@ def add_service():
         service_name = request.form.get('service_name')
         description = request.form.get('description')
         price = request.form.get('price')
+
+        if not service_name:
+            flash("Поле \"Название услуги\" обязательно для заполнения", 'danger')
+            return render_template('add_service.html', form_data=request.form)
+
+        if not description:
+            flash("Поле \"Описание услуги\" обязательно для заполнения", 'danger')
+            return render_template('add_service.html', form_data=request.form)
+
+        if not price:
+            flash("Поле \"Стоимость\" обязательно для заполнения", 'danger')
+            return render_template('add_service.html', form_data=request.form)
 
         try:
             new_service = Service(
@@ -259,11 +273,26 @@ def update_service(service_id):
     service = Service.query.get_or_404(service_id)
 
     if request.method == 'POST':
+        service_name = request.form.get('service_name')
+        description = request.form.get('description')
+        price = request.form.get('price')
+
+        if not service_name:
+            flash("Поле \"Название услуги\" обязательно для заполнения", 'danger')
+            return render_template('update_service.html', service=service)
+
+        if not description:
+            flash("Поле \"Описание услуги\" обязательно для заполнения", 'danger')
+            return render_template('update_service.html', service=service)
+
+        if not price:
+            flash("Поле \"Стоимость услуги\" обязательно для заполнения", 'danger')
+            return render_template('update_service.html', service=service)
 
         try:
-            service.service_name = request.form.get('service_name')
-            service.description = request.form.get('description')
-            service.price = request.form.get('price')
+            service.service_name = service_name
+            service.description = description
+            service.price = price
 
             db.session.commit()
             flash("Данные услуги успешно обновлены!", 'success')
