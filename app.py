@@ -313,5 +313,11 @@ def add_order():
     return render_template('add_order.html', customers=customers, services=services, now=datetime.now)
 
 
+@app.route('/list-ordres')
+def list_orders():
+    orders = Order.query.all()
+    return render_template('list_orders.html', orders=orders)
+
+
 if __name__ == "__main__":
     app.run(debug=True)
