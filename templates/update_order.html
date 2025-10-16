@@ -1,19 +1,19 @@
 {% extends 'base.html' %}
 
 {% block title %}
-Оформление заказа
+Редактирование заказа
 {% endblock %}
 
 {% block content %}
 <div class="container mt-4">
-    <h1 class="mb-4">Оформление нового заказа</h1>
+    <h1 class="mb-4">Редактирование заказа #{{ order.id }}</h1>
     <form method="POST">
         <div class="row">
             <!-- Первая колонка: форма выбора -->
             <div class="col-md-5">
                 <div class="card" id="form_card">
                     <div class="card-header">
-                        <h5 class="card-title mb-0">Выбор клиента и услуги</h5>
+                        <h5 class="card-title mb-0">Изменение клиента и услуги</h5>
                     </div>
                     <div class="card-body">
                         <!-- Выбор клиента -->
@@ -22,7 +22,10 @@
                             <select class="form-select" id="customer_id" name="customer_id" required>
                                 <option value="">---</option>
                                 {% for customer in customers %}
-                                <option value="{{ customer.id }}">{{ customer.name }}</option>
+                                <option value="{{ customer.id }}" 
+                                    {% if order.customer_id == customer.id %}selected{% endif %}>
+                                    {{ customer.name }}
+                                </option>
                                 {% endfor %}
                             </select>
                         </div>
@@ -33,21 +36,25 @@
                             <select class="form-select" id="service_id" name="service_id" required>
                                 <option value="">---</option>
                                 {% for service in services %}
-                                <option value="{{ service.id }}">{{ service.service_name }}</option>
+                                <option value="{{ service.id }}"
+                                    {% if order.service_id == service.id %}selected{% endif %}>
+                                    {{ service.service_name }}
+                                </option>
                                 {% endfor %}
                             </select>
                         </div>
 
                         <!-- Дата оформления -->
                         <div class="mb-3">
-                            <label class="form-label">Дата оформления</label>
-                            <input disabled type="text" class="form-control" value="{{ now().strftime('%d.%m.%Y') }}" readonly>
-                            <div class="form-text">Дата устанавливается автоматически</div>
+                            <label for="order_date" class="form-label">Дата оформления</label>
+                            <input type="date" class="form-control" id="order_date" name="order_date" 
+                                   value="{{ order.order_date.strftime('%Y-%m-%d') }}">
+                            <div class="form-text">Дата заказа</div>
                         </div>
 
-                        <!-- Кнопка отправки -->
+                        <!-- Кнопки отправки -->
                         <div class="mt-4">
-                            <button type="submit" class="btn btn-success btn-lg w-100">Оформить заказ</button>
+                            <button type="submit" class="btn btn-success btn-lg w-100 mb-2">Обновить заказ</button>
                             <a href="{{ url_for('index') }}" class="btn btn-secondary btn-lg w-100">Отмена</a>
                         </div>
                     </div>
@@ -62,16 +69,18 @@
                         <h5 class="card-title mb-0">Информация о клиенте</h5>
                     </div>
                     <div class="card-body">
-                        <div class="text-center text-muted" id="customer-empty">
-                            <i class="bi bi-person" style="font-size: 3rem;"></i>
-                            <p class="mt-2">Выберите клиента для просмотра информации</p>
-                        </div>
-                        <div id="customer-info" style="display: none;">
-                            <h6 id="customer-name" class="card-subtitle mb-2"></h6>
-                            <p class="card-text mb-1"><b>Телефон:</b> <span id="customer-phone"></span></p>
-                            <p class="card-text mb-1"><b>Email:</b> <span id="customer-email"></span></p>
-                            <p class="card-text mb-1"><b>Компания:</b> <span id="customer-company"></span></p>
-                            <p class="card-text"><b>Дата рождения:</b> <span id="customer-birthdate"></span></p>
+                        <div id="customer-info">
+                            <h6 id="customer-name" class="card-subtitle mb-2">{{ order.customer.name }}</h6>
+                            <p class="card-text mb-1"><b>Телефон:</b> <span id="customer-phone">{{ order.customer.phone_number }}</span></p>
+                            <p class="card-text mb-1"><b>Email:</b> <span id="customer-email">{{ order.customer.email or 'Не указан' }}</span></p>
+                            <p class="card-text mb-1"><b>Компания:</b> <span id="customer-company">{{ order.customer.company or 'Не указана' }}</span></p>
+                            <p class="card-text"><b>Дата рождения:</b> <span id="customer-birthdate">
+                                {% if order.customer.date_of_birth %}
+                                    {{ order.customer.date_of_birth.strftime('%d.%m.%Y') }}
+                                {% else %}
+                                    Не указана
+                                {% endif %}
+                            </span></p>
                         </div>
                     </div>
                 </div>
@@ -82,14 +91,14 @@
                         <h5 class="card-title mb-0">Информация об услуге</h5>
                     </div>
                     <div class="card-body">
-                        <div class="text-center text-muted" id="service-empty">
-                            <i class="bi bi-briefcase" style="font-size: 3rem;"></i>
-                            <p class="mt-2">Выберите услугу для просмотра информации</p>
-                        </div>
-                        <div id="service-info" style="display: none;">
-                            <h6 id="service-name" class="card-subtitle mb-2"></h6>
-                            <p class="card-text mb-2"><b>Стоимость:</b> <span id="service-price" class="text-success fw-bold"></span> руб.</p>
-                            <p class="card-text"><b>Описание:</b> <span id="service-description"></span></p>
+                        <div id="service-info">
+                            <h6 id="service-name" class="card-subtitle mb-2">{{ order.service.service_name }}</h6>
+                            <p class="card-text mb-2"><b>Стоимость:</b> 
+                                <span id="service-price" class="text-success fw-bold">{{ order.service.price }}</span> руб.
+                            </p>
+                            <p class="card-text"><b>Описание:</b> <span id="service-description">
+                                {{ order.service.description or 'Описание отсутствует' }}
+                            </span></p>
                         </div>
                     </div>
                 </div>
@@ -98,7 +107,7 @@
     </form>
 </div>
 
-<!-- JavaScript для динамического отображения информации -->
+<!-- JavaScript для динамического обновления информации -->
 <script>
 // Данные о клиентах и услугах
 const customersData = {
@@ -126,8 +135,6 @@ const servicesData = {
 // Обработчики изменений в выпадающих списках
 document.getElementById('customer_id').addEventListener('change', function() {
     const customerId = this.value;
-    const customerInfo = document.getElementById('customer-info');
-    const customerEmpty = document.getElementById('customer-empty');
     
     if (customerId && customersData[customerId]) {
         const customer = customersData[customerId];
@@ -136,32 +143,29 @@ document.getElementById('customer_id').addEventListener('change', function() {
         document.getElementById('customer-email').textContent = customer.email;
         document.getElementById('customer-company').textContent = customer.company;
         document.getElementById('customer-birthdate').textContent = customer.birthdate;
-        
-        customerEmpty.style.display = 'none';
-        customerInfo.style.display = 'block';
-    } else {
-        customerEmpty.style.display = 'block';
-        customerInfo.style.display = 'none';
     }
 });
 
 document.getElementById('service_id').addEventListener('change', function() {
     const serviceId = this.value;
-    const serviceInfo = document.getElementById('service-info');
-    const serviceEmpty = document.getElementById('service-empty');
     
     if (serviceId && servicesData[serviceId]) {
         const service = servicesData[serviceId];
         document.getElementById('service-name').textContent = service.name;
         document.getElementById('service-price').textContent = service.price;
         document.getElementById('service-description').textContent = service.description;
-        
-        serviceEmpty.style.display = 'none';
-        serviceInfo.style.display = 'block';
-    } else {
-        serviceEmpty.style.display = 'block';
-        serviceInfo.style.display = 'none';
     }
+});
+
+// Инициализация при загрузке страницы
+document.addEventListener('DOMContentLoaded', function() {
+    // Автоматически обновляем информацию при изменении выбора
+    const customerSelect = document.getElementById('customer_id');
+    const serviceSelect = document.getElementById('service_id');
+    
+    // Триггерим события change для обновления информации
+    customerSelect.dispatchEvent(new Event('change'));
+    serviceSelect.dispatchEvent(new Event('change'));
 });
 </script>
 {% endblock %}

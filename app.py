@@ -51,30 +51,30 @@ def add_customer():
         company = request.form.get('company')
 
         if not name:
-            flash('Поле "ФИО" обязательно для заполнения', 'danger')
+            flash("Поле \"ФИО\" обязательно для заполнения", 'danger')
             return render_template('add_customer.html', form_data=request.form)
 
         if not phone_number:
-            flash('Поле "Номер телефона" обязательно для заполнения', 'danger')
+            flash("Поле \"Номер телефона\" обязательно для заполнения", 'danger')
             return render_template('add_customer.html', form_data=request.form)
 
         if not date_of_birth:
-            flash('Поле "Дата рождения" обязательно для заполнения', 'danger')
+            flash("Поле \"Дата рождения\" обязательно для заполнения", 'danger')
             return render_template('add_customer.html', form_data=request.form)
 
         if not is_valid_phone(phone_number):
             flash(
-                'Неверный формат номера телефона. Используйте российский формат', 'danger')
+                "Неверный формат номера телефона. Используйте российский формат", 'danger')
             return redirect(url_for('add_customer'))
 
         if not is_valid_date(date_of_birth):
-            flash('Неверный формат даты. Введите корректную дату', 'danger')
+            flash("Неверный формат даты. Введите корректную дату", 'danger')
             return redirect(url_for('add_customer'))
 
         existing_phone_number = Customer.query.filter_by(
             phone_number=phone_number).first()
         if existing_phone_number:
-            flash('Клиент с таким номером телефона уже существует', 'danger')
+            flash("Клиент с таким номером телефона уже существует", 'danger')
             return render_template('add_customer.html', form_data=request.form)
 
         try:
@@ -90,13 +90,13 @@ def add_customer():
 
             db.session.add(new_customer)
             db.session.commit()
-            flash('Клиент успешно добавлен!', 'success')
+            flash("Клиент успешно добавлен!", 'success')
             return redirect(url_for('list_customers'))
 
         except Exception as e:
             db.session.rollback()
             print(f"Ошибка при добавлении клиента: {e}")
-            flash('Произошла ошибка при добавлении клиента', 'danger')
+            flash("Произошла ошибка при добавлении клиента", 'danger')
             return redirect(url_for('add_customer'))
 
     return render_template('add_customer.html')
@@ -118,19 +118,19 @@ def delete_customer(customer_id):
 
         if orders_count > 0:
             flash(
-                f'Невозможно удалить клиента. Существует {orders_count} связанных заказов.', 'warning')
+                f"Невозможно удалить клиента. У этого клиента оформленных заказов: {orders_count}", 'warning')
             return redirect(url_for('list_customers'))
 
         db.session.delete(customer)
         db.session.commit()
 
-        flash('Клиент успешно удален!', 'success')
+        flash("Клиент успешно удален!", 'success')
         return redirect(url_for('list_customers'))
 
     except Exception as e:
         db.session.rollback()
         print(f"Ошибка при удалении клиента: {e}")
-        flash('Произошла ошибка при удалении клиента', 'danger')
+        flash("Произошла ошибка при удалении клиента", 'danger')
         return redirect(url_for('list_customers'))
 
 
@@ -146,30 +146,30 @@ def update_customer(customer_id):
         company = request.form.get('company')
 
         if not name:
-            flash('Поле "ФИО" обязательно для заполнения', 'danger')
+            flash("Поле \"ФИО\" обязательно для заполнения", 'danger')
             return render_template('update_customer.html', customer=customer)
 
         if not phone_number:
-            flash('Поле "Номер телефона" обязательно для заполнения', 'danger')
+            flash("Поле \"Номер телефона\" обязательно для заполнения", 'danger')
             return render_template('update_customer.html', customer=customer)
 
         if not date_of_birth:
-            flash('Поле "Дата рождения" обязательно для заполнения', 'danger')
+            flash("Поле \"Дата рождения\" обязательно для заполнения", 'danger')
             return render_template('update_customer.html', customer=customer)
 
         if not is_valid_phone(phone_number):
             flash(
-                'Неверный формат номера телефона. Используйте российский формат', 'danger')
+                "Неверный формат номера телефона. Используйте российский формат", 'danger')
             return redirect(url_for('add_customer'))
 
         if not is_valid_date(date_of_birth):
-            flash('Неверный формат даты. Введите корректную дату', 'danger')
+            flash("Неверный формат даты. Введите корректную дату", 'danger')
             return redirect(url_for('add_customer'))
 
         existing_phone_number = Customer.query.filter_by(
             phone_number=phone_number).first()
         if existing_phone_number:
-            flash('Клиент с таким номером телефона уже существует', 'danger')
+            flash("Клиент с таким номером телефона уже существует", 'danger')
             return render_template('add_customer.html', form_data=request.form)
 
         try:
@@ -182,13 +182,13 @@ def update_customer(customer_id):
             customer.company = company
 
             db.session.commit()
-            flash('Данные клиента успешно обновлены!', 'success')
+            flash("Данные клиента успешно обновлены!", 'success')
             return redirect(url_for('list_customers'))
 
         except Exception as e:
             db.session.rollback()
             print(f"Ошибка при редактировании клиента: {e}")
-            flash('Произошла ошибка при обновлении данных клиента', 'danger')
+            flash("Произошла ошибка при обновлении данных клиента", 'danger')
 
     return render_template('update_customer.html', customer=customer)
 # Работа с клиентами -->
@@ -211,13 +211,13 @@ def add_service():
 
             db.session.add(new_service)
             db.session.commit()
-            flash('Новая услуга успешно добавлена!', 'success')
+            flash("Новая услуга успешно добавлена!", 'success')
             return redirect(url_for('list_services.html'))
 
         except Exception as e:
             db.session.rollback()
             print(f"Ошибка при добавлении новой услуги: {e}")
-            flash('Произошла ошибка при добавлении новой услуги', 'danger')
+            flash("Произошла ошибка при добавлении новой услуги", 'danger')
             return redirect(url_for('add_service'))
 
     return render_template('add_service.html')
@@ -238,19 +238,19 @@ def delete_service(service_id):
 
         if orders_count > 0:
             flash(
-                f'Невозможно удалить услугу. Существует {orders_count} связанных заказов.', 'warning')
+                f"Невозможно удалить услугу. С этой услугой оформлено {orders_count} заказ(ов)", 'warning')
             return redirect(url_for('list_services'))
 
         db.session.delete(service)
         db.session.commit()
 
-        flash('Услуга успешно удалена!', 'success')
+        flash("Услуга успешно удалена!", 'success')
         return redirect(url_for('list_services'))
 
     except Exception as e:
         db.session.rollback()
         print(f"Ошибка при удалении услуги: {e}")
-        flash('Произошла ошибка при удалении услуги', 'danger')
+        flash("Произошла ошибка при удалении услуги", 'danger')
         return redirect(url_for('list_services'))
 
 
@@ -266,13 +266,13 @@ def update_service(service_id):
             service.price = request.form.get('price')
 
             db.session.commit()
-            flash('Данные услуги успешно обновлены!', 'success')
+            flash("Данные услуги успешно обновлены!", 'success')
             return redirect(url_for('list_services'))
 
         except Exception as e:
             db.session.rollback()
             print(f"Ошибка при редактировании услуги: {e}")
-            flash('Произошла ошибка при обновлении данных услуги', 'danger')
+            flash("Произошла ошибка при обновлении данных услуги", 'danger')
 
     return render_template('update_service.html', service=service)
 # Работа с услугами -->
@@ -287,7 +287,11 @@ def add_order():
     if request.method == 'POST':
         customer_id = request.form.get('customer_id')
         service_id = request.form.get('service_id')
-        order_date = request.form.get('oder_date')
+        order_date = request.form.get('order_date')
+
+        if not customer_id or not service_id:
+            flash("Пожалуйста, выберите клиента и услугу", 'danger')
+            return render_template('add_order.html', customers=customers, services=services, now=datetime.now)
 
         try:
             order_date = datetime.now().date()
@@ -301,13 +305,13 @@ def add_order():
             db.session.add(new_order)
             db.session.commit()
 
-            flash('Заказ успешно оформлен', 'success')
+            flash("Заказ успешно оформлен", 'success')
             return redirect(url_for('index'))
 
         except Exception as e:
             db.session.rollback()
             print(f"Ошибка при оформлении заказа: {e}")
-            flash('Произошла ошибка при оформлении заказа', 'danger')
+            flash("Произошла ошибка при оформлении заказа", 'danger')
             return render_template('add_order.html', customers=customers, services=services)
 
     return render_template('add_order.html', customers=customers, services=services, now=datetime.now)
@@ -317,6 +321,43 @@ def add_order():
 def list_orders():
     orders = Order.query.all()
     return render_template('list_orders.html', orders=orders)
+
+
+@app.route('/update-order/<int:order_id>', methods=['POST', 'GET'])
+def update_order(order_id):
+    order = Order.query.get_or_404(order_id)
+    customers = Customer.query.all()
+    services = Service.query.all()
+
+    if request.method == 'POST':
+        customer_id = request.form.get('customer_id')
+        service_id = request.form.get('service_id')
+        order_date = request.form.get('order_date')
+
+        if not customer_id or not service_id:
+            flash("Пожалуйста, выберите клиента и услугу", 'danger')
+            return render_template('update_order.html', order=order, customers=customers, services=services, now=datetime.now)
+
+        try:
+            order.customer_id = customer_id
+            order.service_id = service_id
+
+            if order_date:
+                order.order_date = datetime.strptime(
+                    order_date, '%Y-%m-%d').date()
+
+            db.session.commit()
+
+            flash('Данные заказа успешно обновлены', 'success')
+            return redirect(url_for('index'))
+
+        except Exception as e:
+            db.session.rollback()
+            print(f"Ошибка при обновлении заказа: {e}")
+            flash('Произошла ошибка при обновлении заказа', 'danger')
+            return render_template('update_order.html', order=order, customers=customers, services=services, now=datetime.now)
+
+    return render_template('update_order.html', order=order, customers=customers, services=services, now=datetime.now)
 
 
 if __name__ == "__main__":

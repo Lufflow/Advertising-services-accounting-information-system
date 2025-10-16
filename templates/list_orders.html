@@ -50,7 +50,7 @@
                 <!-- Кнопки управления заказами -->
                 <td class="text-center">
                     <div class="btn-group" role="group">
-                        <a href="{{ url_for('index') }}" class="btn btn-warning rounded">Редактировать</a>
+                        <a href="{{ url_for('update_order', order_id=order.id) }}" class="btn btn-warning rounded">Редактировать</a>
                         <a href="{{ url_for('index') }}" 
                         class="btn btn-danger rounded"
                         onclick="return confirm('Вы уверены, что хотите удалить этот заказ?')">Удалить</a>

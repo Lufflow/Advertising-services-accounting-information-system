@@ -18,7 +18,7 @@
                     <div class="mt-3">
                         <p class="card-text"><strong>Стоимость: {{ service.price }} руб.</strong></p>
                         <div class="d-flex gap-2">
-                            <a href="{{ url_for('index') }}" class="btn btn-success flex-grow-1">Оформить заказ</a>
+                            <a href="{{ url_for('add_order') }}" class="btn btn-success flex-grow-1">Оформить заказ</a>
                             <a href="{{ url_for('delete_service', service_id=service.id) }}" 
                                class="btn btn-danger p-2 d-flex align-items-center justify-content-center"
                                onclick="return confirm('Вы уверены, что хотите удалить эту услугу?')">
