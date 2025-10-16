@@ -50,31 +50,46 @@ def add_customer():
         email = request.form.get('email')
         company = request.form.get('company')
 
+        app.logger.info(
+            f"Start creating customer")
+
         if not name:
+            app.logger.warning(
+                f"Attempt to create a customer with an empty name field.")
             flash("Поле \"ФИО\" обязательно для заполнения", 'danger')
             return render_template('add_customer.html', form_data=request.form)
 
         if not phone_number:
+            app.logger.warning(
+                f"Attempt to create a customer with an empty phone number field.")
             flash("Поле \"Номер телефона\" обязательно для заполнения", 'danger')
             return render_template('add_customer.html', form_data=request.form)
 
         if not date_of_birth:
+            app.logger.warning(
+                f"Attempt to create a customer with an empty date of birth field.")
             flash("Поле \"Дата рождения\" обязательно для заполнения", 'danger')
             return render_template('add_customer.html', form_data=request.form)
 
         if not is_valid_phone(phone_number):
+            app.logger.warning(
+                f"Attempt to create a client with an invalid phone number format.")
             flash(
                 "Неверный формат номера телефона. Используйте российский формат", 'danger')
             return redirect(url_for('add_customer'))
 
         is_valid, message = is_valid_date(date_of_birth)
         if not is_valid:
+            app.logger.warning(
+                f"Attempt to create a client with an invalid date of birth. Message: {message}")
             flash(message, 'danger')
             return redirect(url_for('add_customer'))
 
         existing_phone_number = Customer.query.filter_by(
             phone_number=phone_number).first()
         if existing_phone_number:
+            app.logger.warning(
+                f"Attempt to create a client with an existing phone number in the database. Phone number: {phone_number}")
             flash("Клиент с таким номером телефона уже существует", 'danger')
             return render_template('add_customer.html', form_data=request.form)
 
@@ -91,14 +106,22 @@ def add_customer():
 
             db.session.add(new_customer)
             db.session.commit()
+
+            app.logger.info(
+                f"Service successfully created. ID: {new_customer.id}")
+
             flash("Клиент успешно добавлен!", 'success')
             return redirect(url_for('list_customers'))
 
         except Exception as e:
             db.session.rollback()
+            app.logger.error(
+                f"Error creating service. ID: {new_customer.id}. Error: {str(e)}", exc_info=True)
             print(f"Ошибка при добавлении клиента: {e}")
             flash("Произошла ошибка при добавлении клиента", 'danger')
             return redirect(url_for('add_customer'))
+
+    app.logger.info("The new customer creation page has loaded")
 
     return render_template('add_customer.html')
 
@@ -114,33 +137,51 @@ def update_customer(customer_id):
         email = request.form.get('email')
         company = request.form.get('company')
 
+        app.logger.info(
+            f"Start editing customer. ID: {customer_id}.")
+
         if not name:
+            app.logger.warning(
+                f"Attempt to send an customer with an empty customer name field. ID: {customer_id}.")
             flash("Поле \"ФИО\" обязательно для заполнения", 'danger')
             return render_template('update_customer.html', customer=customer)
 
         if not phone_number:
+            app.logger.warning(
+                f"Attempt to send an customer with an empty customer phone number field. ID: {customer_id}.")
             flash("Поле \"Номер телефона\" обязательно для заполнения", 'danger')
             return render_template('update_customer.html', customer=customer)
 
         if not date_of_birth:
+            app.logger.warning(
+                f"Attempt to send an customer with an empty customer date of birth field. ID: {customer_id}.")
             flash("Поле \"Дата рождения\" обязательно для заполнения", 'danger')
             return render_template('update_customer.html', customer=customer)
 
         if not is_valid_phone(phone_number):
+            app.logger.warning(
+                f"Attempt to send a customer with an invalid phone number format.")
             flash(
                 "Неверный формат номера телефона. Используйте российский формат", 'danger')
-            return redirect(url_for('add_customer'))
+            return render_template('update_customer.html', customer=customer)
 
         is_valid, message = is_valid_date(date_of_birth)
         if not is_valid:
+            app.logger.warning(
+                f"Attempt to send a customer with an invalid date of birth. Message: {message}")
             flash(message, 'danger')
-            return redirect(url_for('add_customer'))
+            return render_template('update_customer.html', customer=customer)
 
-        existing_phone_number = Customer.query.filter_by(
-            phone_number=phone_number).first()
+        existing_phone_number = Customer.query.filter(
+            Customer.phone_number == phone_number,
+            Customer.id != customer_id
+        ).first()
+
         if existing_phone_number:
+            app.logger.warning(
+                f"Attempt to send a customer with an existing phone number in the database. Phone number: {phone_number}")
             flash("Клиент с таким номером телефона уже существует", 'danger')
-            return render_template('add_customer.html', form_data=request.form)
+            return render_template('update_customer.html', form_data=request.form)
 
         try:
             date_obj = datetime.strptime(date_of_birth, '%Y-%m-%d').date()
@@ -152,13 +193,21 @@ def update_customer(customer_id):
             customer.company = company
 
             db.session.commit()
+
+            app.logger.info(
+                f"Customer successfully updated. ID: {customer_id}.")
+
             flash("Данные клиента успешно обновлены!", 'success')
             return redirect(url_for('list_customers'))
 
         except Exception as e:
             db.session.rollback()
+            app.logger.error(
+                f"Customer modification error. ID: {customer_id}. Error: {str(e)}", exc_info=True)
             print(f"Ошибка при редактировании клиента: {e}")
             flash("Произошла ошибка при обновлении данных клиента", 'danger')
+
+    app.logger.info("Customer edit page loaded")
 
     return render_template('update_customer.html', customer=customer)
 
@@ -168,22 +217,28 @@ def delete_customer(customer_id):
     try:
         customer = Customer.query.get_or_404(customer_id)
 
-        # Проверяем, есть ли связанные заказы
         orders_count = Order.query.filter_by(customer_id=customer_id).count()
 
         if orders_count > 0:
+            app.logger.warning(
+                f"Attempt to delete a customer associated with an order. ID: {customer.id}, Number of orders: {orders_count}.")
             flash(
-                f"Невозможно удалить клиента. У этого клиента оформленных заказов: {orders_count}", 'warning')
+                f"Невозможно удалить клиента. У этого клиента есть оформленные заказы: {orders_count}", 'warning')
             return redirect(url_for('list_customers'))
 
         db.session.delete(customer)
         db.session.commit()
+
+        app.logger.info(
+            f"Service successfully deleted. ID: {customer.id}.")
 
         flash("Клиент успешно удален!", 'success')
         return redirect(url_for('list_customers'))
 
     except Exception as e:
         db.session.rollback()
+        app.logger.error(
+            f"Error deleting service. ID: {customer.id}. Error: {str(e)}", exc_info=True)
         print(f"Ошибка при удалении клиента: {e}")
         flash("Произошла ошибка при удалении клиента", 'danger')
         return redirect(url_for('list_customers'))
@@ -269,19 +324,19 @@ def update_service(service_id):
 
         if not service_name:
             app.logger.warning(
-                f"Attempt to send an serivce with an empty order name field. ID: {service_id}.")
+                f"Attempt to send an service with an empty order name field. ID: {service_id}.")
             flash("Поле \"Название услуги\" обязательно для заполнения", 'danger')
             return render_template('update_service.html', service=service)
 
         if not description:
             app.logger.warning(
-                f"Attempt to send an serivce with an empty order description field. ID: {service_id}.")
+                f"Attempt to send an service with an empty order description field. ID: {service_id}.")
             flash("Поле \"Описание услуги\" обязательно для заполнения", 'danger')
             return render_template('update_service.html', service=service)
 
         if not price:
             app.logger.warning(
-                f"Attempt to send an serivce with an empty order price field. ID: {service_id}.")
+                f"Attempt to send an service with an empty order price field. ID: {service_id}.")
             flash("Поле \"Стоимость услуги\" обязательно для заполнения", 'danger')
             return render_template('update_service.html', service=service)
 
@@ -292,7 +347,7 @@ def update_service(service_id):
 
             db.session.commit()
             app.logger.info(
-                f"Service successfully updated. ID: {service.id}.")
+                f"Service successfully updated. ID: {service_id}.")
             flash("Данные услуги успешно обновлены!", 'success')
             return redirect(url_for('list_services'))
 
@@ -302,6 +357,8 @@ def update_service(service_id):
                 f"Service modification error. ID: {service_id}. Error: {str(e)}", exc_info=True)
             print(f"Ошибка при редактировании услуги: {e}")
             flash("Произошла ошибка при обновлении данных услуги", 'danger')
+
+    app.logger.info("Service edit page loaded")
 
     return render_template('update_service.html', service=service)
 
