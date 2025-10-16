@@ -289,8 +289,12 @@ def add_order():
         service_id = request.form.get('service_id')
         order_date = request.form.get('order_date')
 
-        if not customer_id or not service_id:
-            flash("Пожалуйста, выберите клиента и услугу", 'danger')
+        if not customer_id:
+            flash("Пожалуйста, выберите клиента", 'danger')
+            return render_template('add_order.html', customers=customers, services=services, now=datetime.now)
+
+        if not service_id:
+            flash("Пожалуйста, выберите услугу", 'danger')
             return render_template('add_order.html', customers=customers, services=services, now=datetime.now)
 
         try:
@@ -334,8 +338,12 @@ def update_order(order_id):
         service_id = request.form.get('service_id')
         order_date = request.form.get('order_date')
 
-        if not customer_id or not service_id:
-            flash("Пожалуйста, выберите клиента и услугу", 'danger')
+        if not customer_id:
+            flash("Пожалуйста, выберите клиента", 'danger')
+            return render_template('update_order.html', order=order, customers=customers, services=services, now=datetime.now)
+
+        if not service_id:
+            flash("Пожалуйста, выберите услугу", 'danger')
             return render_template('update_order.html', order=order, customers=customers, services=services, now=datetime.now)
 
         try:
