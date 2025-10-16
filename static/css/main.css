@@ -90,6 +90,14 @@ body {
     width: 512px;
 }
 
+#customer_card {
+    width: 256px
+}
+
+#service_card {
+    width: 425px;
+}
+
 .card:hover {
     box-shadow: 0 5px 25px rgba(0, 0, 0, 0.15);
 }
