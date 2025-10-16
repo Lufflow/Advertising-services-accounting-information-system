@@ -397,5 +397,23 @@ def update_order(order_id):
     return render_template('update_order.html', order=order, customers=customers, services=services, now=datetime.now)
 
 
+@app.route('/delete-order/<int:order_id>', methods=['GET'])
+def delete_order(order_id):
+    try:
+        order = Order.query.get_or_404(order_id)
+
+        db.session.delete(order)
+        db.session.commit()
+
+        flash("Заказ успешно удален!", 'success')
+        return redirect(url_for('list_orders'))
+
+    except Exception as e:
+        db.session.rollback()
+        print(f"Ошибка при удалении заказа: {e}")
+        flash("Произошла ошибка при удалении заказа", 'danger')
+        return redirect(url_for('list_orders'))
+
+
 if __name__ == "__main__":
     app.run(debug=True)
