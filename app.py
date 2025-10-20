@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from flask_migrate import Migrate
 from models import db, Customer, Service, Order
+from config import Config
 from logger_config import setup_logger
 from health_check_config import check_db, check_logging
 from validation import is_valid_phone, is_valid_date
@@ -8,10 +9,9 @@ from datetime import datetime
 
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///flask.db'
-app.secret_key = 'some-secret-key'
-db.init_app(app)
+app.config.from_object(Config)
 setup_logger(app)
+db.init_app(app)
 migrate = Migrate(app, db)
 
 
@@ -32,11 +32,6 @@ def health_check():
 @app.route('/home')
 def index():
     return render_template('index.html')
-
-
-@app.route('/about')
-def about():
-    return render_template('about.html')
 # Базовый блок страницы -->
 
 
@@ -547,4 +542,8 @@ def list_orders():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(
+        host=app.config['HOST'],
+        port=app.config['PORT'],
+        debug=True
+    )

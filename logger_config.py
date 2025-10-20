@@ -17,6 +17,11 @@ def setup_logger(app):
     )
 
     handler.setFormatter(formatter)
-    handler.setLevel(logging.INFO)
-    app.logger.setLevel(logging.INFO)
+
+    logging_level = getattr(logging, app.config['LOG_LEVEL'])
+    handler.setLevel(logging_level)
+    app.logger.setLevel(logging_level)
     app.logger.addHandler(handler)
+
+    app.logger.info(
+        f"The logger is configured. Logging level: {app.config['LOG_LEVEL']}")
