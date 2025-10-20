@@ -4,7 +4,7 @@ from models import db, Customer, Service, Order
 from config import Config
 from logger_config import setup_logger
 from health_check_config import check_db, check_logging
-from validation import is_valid_phone, is_valid_date
+from validation import is_valid_phone, ValidDate, is_empty_field
 from datetime import datetime
 
 
@@ -48,22 +48,16 @@ def add_customer():
         app.logger.info(
             f"Start creating customer")
 
-        if not name:
+        if is_empty_field(name):
             app.logger.warning(
                 f"Attempt to create a customer with an empty name field.")
             flash("Поле \"ФИО\" обязательно для заполнения", 'danger')
             return render_template('add_customer.html', form_data=request.form)
 
-        if not phone_number:
+        if is_empty_field(phone_number):
             app.logger.warning(
                 f"Attempt to create a customer with an empty phone number field.")
             flash("Поле \"Номер телефона\" обязательно для заполнения", 'danger')
-            return render_template('add_customer.html', form_data=request.form)
-
-        if not date_of_birth:
-            app.logger.warning(
-                f"Attempt to create a customer with an empty date of birth field.")
-            flash("Поле \"Дата рождения\" обязательно для заполнения", 'danger')
             return render_template('add_customer.html', form_data=request.form)
 
         if not is_valid_phone(phone_number):
@@ -73,7 +67,7 @@ def add_customer():
                 "Неверный формат номера телефона. Используйте российский формат", 'danger')
             return redirect(url_for('add_customer'))
 
-        is_valid, message = is_valid_date(date_of_birth)
+        is_valid, message = ValidDate.is_valid_birth_date(date_of_birth)
         if not is_valid:
             app.logger.warning(
                 f"Attempt to create a client with an invalid date of birth. Message: {message}")
@@ -135,22 +129,16 @@ def update_customer(customer_id):
         app.logger.info(
             f"Start editing customer. ID: {customer_id}.")
 
-        if not name:
+        if is_empty_field(name):
             app.logger.warning(
                 f"Attempt to send an customer with an empty customer name field. ID: {customer_id}.")
             flash("Поле \"ФИО\" обязательно для заполнения", 'danger')
             return render_template('update_customer.html', customer=customer)
 
-        if not phone_number:
+        if is_empty_field(phone_number):
             app.logger.warning(
                 f"Attempt to send an customer with an empty customer phone number field. ID: {customer_id}.")
             flash("Поле \"Номер телефона\" обязательно для заполнения", 'danger')
-            return render_template('update_customer.html', customer=customer)
-
-        if not date_of_birth:
-            app.logger.warning(
-                f"Attempt to send an customer with an empty customer date of birth field. ID: {customer_id}.")
-            flash("Поле \"Дата рождения\" обязательно для заполнения", 'danger')
             return render_template('update_customer.html', customer=customer)
 
         if not is_valid_phone(phone_number):
@@ -160,7 +148,7 @@ def update_customer(customer_id):
                 "Неверный формат номера телефона. Используйте российский формат", 'danger')
             return render_template('update_customer.html', customer=customer)
 
-        is_valid, message = is_valid_date(date_of_birth)
+        is_valid, message = ValidDate.is_valid_birth_date(date_of_birth)
         if not is_valid:
             app.logger.warning(
                 f"Attempt to send a customer with an invalid date of birth. Message: {message}")
@@ -216,7 +204,7 @@ def delete_customer(customer_id):
 
         if orders_count > 0:
             app.logger.warning(
-                f"Attempt to delete a customer associated with an order. ID: {customer.id}, Number of orders: {orders_count}.")
+                f"Attempt to delete a customer associated with an order(s). ID: {customer.id}, Number of orders: {orders_count}.")
             flash(
                 f"Невозможно удалить клиента. У этого клиента есть оформленные заказы: {orders_count}", 'warning')
             return redirect(url_for('list_customers'))
@@ -258,19 +246,19 @@ def add_service():
         app.logger.info(
             f"Start creating service")
 
-        if not service_name:
+        if is_empty_field(service_name):
             app.logger.warning(
                 f"Attempt to create a service with an empty service name field.")
             flash("Поле \"Название услуги\" обязательно для заполнения", 'danger')
             return render_template('add_service.html', form_data=request.form)
 
-        if not description:
+        if is_empty_field(description):
             app.logger.warning(
                 f"Attempt to create a service with an empty service description field.")
             flash("Поле \"Описание услуги\" обязательно для заполнения", 'danger')
             return render_template('add_service.html', form_data=request.form)
 
-        if not price:
+        if is_empty_field(price):
             app.logger.warning(
                 f"Attempt to create a service with an empty price field.")
             flash("Поле \"Стоимость\" обязательно для заполнения", 'danger')
@@ -317,19 +305,19 @@ def update_service(service_id):
         app.logger.info(
             f"Start editing service. ID: {service_id}.")
 
-        if not service_name:
+        if is_empty_field(service_name):
             app.logger.warning(
                 f"Attempt to send an service with an empty order name field. ID: {service_id}.")
             flash("Поле \"Название услуги\" обязательно для заполнения", 'danger')
             return render_template('update_service.html', service=service)
 
-        if not description:
+        if is_empty_field(description):
             app.logger.warning(
                 f"Attempt to send an service with an empty order description field. ID: {service_id}.")
             flash("Поле \"Описание услуги\" обязательно для заполнения", 'danger')
             return render_template('update_service.html', service=service)
 
-        if not price:
+        if is_empty_field(price):
             app.logger.warning(
                 f"Attempt to send an service with an empty order price field. ID: {service_id}.")
             flash("Поле \"Стоимость услуги\" обязательно для заполнения", 'danger')
@@ -367,7 +355,7 @@ def delete_service(service_id):
 
         if orders_count > 0:
             app.logger.warning(
-                f"Attempt to delete a service associated with an order. ID: {service.id}, Number of orders: {orders_count}.")
+                f"Attempt to delete a service associated with an order(s). ID: {service.id}, Number of orders: {orders_count}.")
             flash(
                 f"Невозможно удалить услугу. С этой услугой оформлено {orders_count} заказ(ов)", 'warning')
             return redirect(url_for('list_services'))
@@ -412,18 +400,24 @@ def add_order():
         app.logger.info(
             f"Start creating order. Customer: {customer_id}, Service: {service_id}")
 
-        if not customer_id:
+        if is_empty_field(customer_id):
             app.logger.warning(
                 f"Attempt to create an order with empty fields. Customer: {customer_id}, Service: {service_id}")
             flash("Пожалуйста, выберите клиента", 'danger')
             return render_template('add_order.html', customers=customers, services=services, now=datetime.now)
 
-        if not service_id:
+        if is_empty_field(service_id):
             app.logger.warning(
                 f"Attempt to create an order with empty fields. Customer: {customer_id}, Service: {service_id}")
-            flash("Пожалуйста, выберите клиента", 'danger')
             flash("Пожалуйста, выберите услугу", 'danger')
             return render_template('add_order.html', customers=customers, services=services, now=datetime.now)
+
+        is_valid, message = ValidDate.is_valid_order_date(order_date)
+        if not is_valid:
+            app.logger.warning(
+                f"Attempt to create an order with invalid date of order. Message: {message}")
+            flash(message, 'danger')
+            return redirect(url_for('add_order'))
 
         try:
             order_date = datetime.now().date()
@@ -470,23 +464,30 @@ def update_order(order_id):
         app.logger.info(
             f"Start editing order. Order: {order.id},Customer: {customer_id}, Service: {service_id}")
 
-        if not customer_id:
+        if is_empty_field(customer_id):
             app.logger.warning(
-                f"Attempt to edit an order with empty fields. Customer: {customer_id}, Service: {service_id}")
+                f"Attempt to edit order {order.id} without selecting a customer")
             flash("Пожалуйста, выберите клиента", 'danger')
             return render_template('update_order.html', order=order, customers=customers, services=services, now=datetime.now)
 
-        if not service_id:
+        if is_empty_field(service_id):
             app.logger.warning(
-                f"Attempt to edit an order with empty fields. Customer: {customer_id}, Service: {service_id}")
+                f"Attempt to edit order {order.id} without selecting a service")
             flash("Пожалуйста, выберите услугу", 'danger')
+            return render_template('update_order.html', order=order, customers=customers, services=services, now=datetime.now)
+
+        is_valid, message = ValidDate.is_valid_order_date(order_date)
+        if not is_valid:
+            app.logger.warning(
+                f"Attempt to send an order with an invalid date of order. Message: {message}")
+            flash(message, 'danger')
             return render_template('update_order.html', order=order, customers=customers, services=services, now=datetime.now)
 
         try:
             order.customer_id = customer_id
             order.service_id = service_id
 
-            if order_date:
+            if order_date and order_date.strip():
                 order.order_date = datetime.strptime(
                     order_date, '%Y-%m-%d').date()
 
@@ -496,7 +497,7 @@ def update_order(order_id):
                 f"Order successfully updated. ID: {order.id}, Customer: {customer_id}, Service: {service_id}, Date: {order_date}")
 
             flash('Данные заказа успешно обновлены', 'success')
-            return redirect(url_for('index'))
+            return redirect(url_for('list_orders'))
 
         except Exception as e:
             db.session.rollback()

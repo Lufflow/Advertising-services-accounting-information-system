@@ -40,9 +40,12 @@
 
                         <!-- Дата оформления -->
                         <div class="mb-3">
-                            <label class="form-label">Дата оформления</label>
-                            <input disabled type="text" class="form-control" value="{{ now().strftime('%d.%m.%Y') }}" readonly>
-                            <div class="form-text">Дата устанавливается автоматически</div>
+                            <label for="order_date" class="form-label">Дата оформления</label>
+                            <input type="date" class="form-control" id="order_date" name="order_date" 
+                                value="{{ now().strftime('%Y-%m-%d') }}">
+                            <div class="form-text">
+                                Текущая дата установлена автоматически. Вы можете изменить её при необходимости.
+                            </div>
                         </div>
 
                         <!-- Кнопка отправки -->
@@ -162,6 +165,10 @@ document.getElementById('service_id').addEventListener('change', function() {
         serviceEmpty.style.display = 'block';
         serviceInfo.style.display = 'none';
     }
+});
+
+document.getElementById('order_date').addEventListener('change', function() {
+    console.log('Выбрана дата:', this.value);
 });
 </script>
 {% endblock %}
