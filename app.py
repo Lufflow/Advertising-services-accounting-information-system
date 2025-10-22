@@ -29,14 +29,13 @@ def health_check():
 
 # <-- Базовый блок страницы
 @app.route('/')
-@app.route('/home')
 def index():
     return render_template('index.html')
 # Базовый блок страницы -->
 
 
 # <-- Работа с клиентами
-@app.route('/add-customer', methods=['POST', 'GET'])
+@app.route('/add-customer', methods=['GET', 'POST'])
 def add_customer():
     if request.method == 'POST':
         name = request.form.get('name')
@@ -65,14 +64,14 @@ def add_customer():
                 f"Attempt to create a client with an invalid phone number format.")
             flash(
                 "Неверный формат номера телефона. Используйте российский формат", 'danger')
-            return redirect(url_for('add_customer'))
+            return render_template('add_customer.html', form_data=request.form)
 
         is_valid, message = ValidDate.is_valid_birth_date(date_of_birth)
         if not is_valid:
             app.logger.warning(
                 f"Attempt to create a client with an invalid date of birth. Message: {message}")
             flash(message, 'danger')
-            return redirect(url_for('add_customer'))
+            return render_template('add_customer.html', form_data=request.form)
 
         existing_phone_number = Customer.query.filter_by(
             phone_number=phone_number).first()
@@ -108,14 +107,14 @@ def add_customer():
                 f"Error creating service. ID: {new_customer.id}. Error: {str(e)}", exc_info=True)
             print(f"Ошибка при добавлении клиента: {e}")
             flash("Произошла ошибка при добавлении клиента", 'danger')
-            return redirect(url_for('add_customer'))
+            return render_template('add_customer.html', form_data=request.form)
 
     app.logger.info("The new customer creation page has loaded")
 
     return render_template('add_customer.html')
 
 
-@app.route('/update-customer/<int:customer_id>', methods=['POST', 'GET'])
+@app.route('/update-customer/<int:customer_id>', methods=['GET', 'POST'])
 def update_customer(customer_id):
     customer = Customer.query.get_or_404(customer_id)
 
@@ -195,7 +194,7 @@ def update_customer(customer_id):
     return render_template('update_customer.html', customer=customer)
 
 
-@app.route('/delete-customer/<int:customer_id>', methods=['GET'])
+@app.route('/delete-customer/<int:customer_id>', methods=['GET', 'POST'])
 def delete_customer(customer_id):
     try:
         customer = Customer.query.get_or_404(customer_id)
@@ -236,7 +235,7 @@ def list_customers():
 
 
 # <-- Работа с услугами
-@app.route('/add-service', methods=['POST', 'GET'])
+@app.route('/add-service', methods=['GET', 'POST'])
 def add_service():
     if request.method == 'POST':
         service_name = request.form.get('service_name')
@@ -286,14 +285,14 @@ def add_service():
                 f"Error creating service. ID: {new_service.id}. Error: {str(e)}", exc_info=True)
             print(f"Ошибка при добавлении новой услуги: {e}")
             flash("Произошла ошибка при добавлении новой услуги", 'danger')
-            return redirect(url_for('add_service'))
+            return render_template('add_service.html', form_data=request.form)
 
     app.logger.info("The new service creation page has loaded")
 
     return render_template('add_service.html')
 
 
-@app.route('/update-service/<int:service_id>', methods=['POST', 'GET'])
+@app.route('/update-service/<int:service_id>', methods=['GET', 'POST'])
 def update_service(service_id):
     service = Service.query.get_or_404(service_id)
 
@@ -346,7 +345,7 @@ def update_service(service_id):
     return render_template('update_service.html', service=service)
 
 
-@app.route('/delete-service/<int:service_id>', methods=['GET'])
+@app.route('/delete-service/<int:service_id>', methods=['GET', 'POST'])
 def delete_service(service_id):
     try:
         service = Service.query.get_or_404(service_id)
@@ -357,7 +356,7 @@ def delete_service(service_id):
             app.logger.warning(
                 f"Attempt to delete a service associated with an order(s). ID: {service.id}, Number of orders: {orders_count}.")
             flash(
-                f"Невозможно удалить услугу. С этой услугой оформлено {orders_count} заказ(ов)", 'warning')
+                f"Невозможно удалить услугу. Есть оформленные заказы с этой услугой: {orders_count}", 'warning')
             return redirect(url_for('list_services'))
 
         db.session.delete(service)
@@ -387,7 +386,7 @@ def list_services():
 
 
 # <-- Работа с заказами
-@app.route('/add-order', methods=['POST', 'GET'])
+@app.route('/add-order', methods=['GET', 'POST'])
 def add_order():
     customers = Customer.query.all()
     services = Service.query.all()
@@ -417,7 +416,7 @@ def add_order():
             app.logger.warning(
                 f"Attempt to create an order with invalid date of order. Message: {message}")
             flash(message, 'danger')
-            return redirect(url_for('add_order'))
+            return render_template('add_order.html', customers=customers, services=services, now=datetime.now)
 
         try:
             order_date = datetime.now().date()
@@ -435,7 +434,7 @@ def add_order():
                 f"Order successfully created. ID: {new_order.id}, Customer: {customer_id}, Service: {service_id}, Date: {order_date}")
 
             flash("Заказ успешно оформлен", 'success')
-            return redirect(url_for('index'))
+            return redirect(url_for('list_orders'))
 
         except Exception as e:
             db.session.rollback()
@@ -450,7 +449,7 @@ def add_order():
     return render_template('add_order.html', customers=customers, services=services, now=datetime.now)
 
 
-@app.route('/update-order/<int:order_id>', methods=['POST', 'GET'])
+@app.route('/update-order/<int:order_id>', methods=['GET', 'POST'])
 def update_order(order_id):
     order = Order.query.get_or_404(order_id)
     customers = Customer.query.all()
@@ -512,7 +511,7 @@ def update_order(order_id):
     return render_template('update_order.html', order=order, customers=customers, services=services, now=datetime.now)
 
 
-@app.route('/delete-order/<int:order_id>', methods=['GET'])
+@app.route('/delete-order/<int:order_id>', methods=['GET', 'POST'])
 def delete_order(order_id):
     try:
         order = Order.query.get_or_404(order_id)

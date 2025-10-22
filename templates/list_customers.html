@@ -8,6 +8,7 @@
 {% block content %}
 <h1>Список клиентов</h1>
 
+{% if customers %}
 <table class="table mt-5 table-bordered table-striped table-hover">
     <thead class="table-dark">
         <tr>
@@ -37,5 +38,10 @@
         {% endfor %}
         </html>
 </table> 
+{% else %}
+    <div class="alert alert-info mt-4">
+        <p class="mb-0">На данный момент в базе нет ни одного клиента. <a href="{{ url_for('add_customer') }}" class="alert-link">Добавить нового клиента</a>.</p>
+    </div>
+    {% endif %}
 
 {% endblock %}

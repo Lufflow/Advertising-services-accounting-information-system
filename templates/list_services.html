@@ -7,7 +7,7 @@
 {% block content %}
 <div class="container">
     <h1 class="mb-4">Список доступных услуг</h1>
-
+    {% if services %}
     <div class="row">
         {% for service in services %}
         <div class="col-md-3 mb-4">
@@ -42,5 +42,10 @@
         </div>
         {% endfor %}
     </div>
+    {% else %}
+    <div class="alert alert-info mt-4">
+        <p class="mb-0">На данный момент в базе нет ни одной услуги. <a href="{{ url_for('add_service') }}" class="alert-link">Добавить новую услугу</a>.</p>
+    </div>
+    {% endif %}
 </div>
 {% endblock %}

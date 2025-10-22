@@ -15,7 +15,7 @@
                 <div class="mb-3">
                     <label for="name" class="form-label">ФИО *</label>
                     <input type="text" class="form-control" id="name" name="name" 
-                           value="{{ request.form.name if request.method == 'POST' }}" 
+                           value="{{ form_data.name if form_data else '' }}" 
                            required maxlength="125" placeholder="Иванов Иван Иванович">
                     <div class="form-text">Обязательное поле</div>
                 </div>
@@ -23,7 +23,7 @@
                 <div class="mb-3">
                     <label for="phone_number" class="form-label">Номер телефона *</label>
                     <input type="tel" class="form-control" id="phone_number" name="phone_number"
-                           value="{{ request.form.phone_number if request.method == 'POST' }}"
+                           value="{{ form_data.phone_number if form_data else '' }}"
                            placeholder="79161234567 или +79161234567 или 7-916-123-45-67"
                            required>
                     <div class="form-text">Обязательное поле</div>
@@ -32,7 +32,7 @@
                 <div class="mb-3">
                     <label for="email" class="form-label">Email</label>
                     <input type="email" class="form-control" id="email" name="email"
-                           value="{{ request.form.email if request.method == 'POST' }}"
+                           value="{{ form_data.email if form_data else '' }}"
                            placeholder="example@mail.ru">
                     <div class="form-text">Необязательное поле</div>
                 </div>
@@ -43,14 +43,14 @@
                 <div class="mb-3">
                     <label for="date_of_birth" class="form-label">Дата рождения</label>
                     <input type="date" class="form-control" id="date_of_birth" name="date_of_birth"
-                           value="{{ request.form.date_of_birth if request.method == 'POST' }}" required>
+                           value="{{ form_data.date_of_birth if form_data else '' }}" required>
                     <div class="form-text">Обязательное поле</div>
                 </div>
                 <!-- Второе поле -->
                 <div class="mb-3">
                     <label for="company" class="form-label">Компания</label>
                     <input type="text" class="form-control" id="company" name="company"
-                           value="{{ request.form.company if request.method == 'POST' }}"
+                           value="{{ form_data.company if form_data else '' }}"
                            maxlength="100">
                     <div class="form-text">Необязательное поле</div>
                 </div>

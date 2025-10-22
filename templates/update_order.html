@@ -69,18 +69,16 @@
                         <h5 class="card-title mb-0">Информация о клиенте</h5>
                     </div>
                     <div class="card-body">
-                        <div id="customer-info">
-                            <h6 id="customer-name" class="card-subtitle mb-2">{{ order.customer.name }}</h6>
-                            <p class="card-text mb-1"><b>Телефон:</b> <span id="customer-phone">{{ order.customer.phone_number }}</span></p>
-                            <p class="card-text mb-1"><b>Email:</b> <span id="customer-email">{{ order.customer.email or 'Не указан' }}</span></p>
-                            <p class="card-text mb-1"><b>Компания:</b> <span id="customer-company">{{ order.customer.company or 'Не указана' }}</span></p>
-                            <p class="card-text"><b>Дата рождения:</b> <span id="customer-birthdate">
-                                {% if order.customer.date_of_birth %}
-                                    {{ order.customer.date_of_birth.strftime('%d.%m.%Y') }}
-                                {% else %}
-                                    Не указана
-                                {% endif %}
-                            </span></p>
+                        <div class="text-center text-muted" id="customer-empty">
+                            <i class="bi bi-person" style="font-size: 3rem;"></i>
+                            <p class="mt-2">Выберите клиента для просмотра информации</p>
+                        </div>
+                        <div id="customer-info" style="display: none;">
+                            <h6 id="customer-name" class="card-subtitle mb-2"></h6>
+                            <p class="card-text mb-1"><b>Телефон:</b> <span id="customer-phone"></span></p>
+                            <p class="card-text mb-1"><b>Email:</b> <span id="customer-email"></span></p>
+                            <p class="card-text mb-1"><b>Компания:</b> <span id="customer-company"></span></p>
+                            <p class="card-text"><b>Дата рождения:</b> <span id="customer-birthdate"></span></p>
                         </div>
                     </div>
                 </div>
@@ -91,14 +89,14 @@
                         <h5 class="card-title mb-0">Информация об услуге</h5>
                     </div>
                     <div class="card-body">
-                        <div id="service-info">
-                            <h6 id="service-name" class="card-subtitle mb-2">{{ order.service.service_name }}</h6>
-                            <p class="card-text mb-2"><b>Стоимость:</b> 
-                                <span id="service-price" class="text-success fw-bold">{{ order.service.price }}</span> руб.
-                            </p>
-                            <p class="card-text"><b>Описание:</b> <span id="service-description">
-                                {{ order.service.description or 'Описание отсутствует' }}
-                            </span></p>
+                        <div class="text-center text-muted" id="service-empty">
+                            <i class="bi bi-briefcase" style="font-size: 3rem;"></i>
+                            <p class="mt-2">Выберите услугу для просмотра информации</p>
+                        </div>
+                        <div id="service-info" style="display: none;">
+                            <h6 id="service-name" class="card-subtitle mb-2"></h6>
+                            <p class="card-text mb-2"><b>Стоимость:</b> <span id="service-price" class="text-success fw-bold"></span> руб.</p>
+                            <p class="card-text"><b>Описание:</b> <span id="service-description"></span></p>
                         </div>
                     </div>
                 </div>
@@ -107,9 +105,8 @@
     </form>
 </div>
 
-<!-- JavaScript для динамического обновления информации -->
+<!-- JavaScript для динамического отображения информации -->
 <script>
-// Данные о клиентах и услугах
 const customersData = {
     {% for customer in customers %}
     {{ customer.id }}: {
@@ -132,9 +129,10 @@ const servicesData = {
     {% endfor %}
 };
 
-// Обработчики изменений в выпадающих списках
 document.getElementById('customer_id').addEventListener('change', function() {
     const customerId = this.value;
+    const customerInfo = document.getElementById('customer-info');
+    const customerEmpty = document.getElementById('customer-empty');
     
     if (customerId && customersData[customerId]) {
         const customer = customersData[customerId];
@@ -143,27 +141,42 @@ document.getElementById('customer_id').addEventListener('change', function() {
         document.getElementById('customer-email').textContent = customer.email;
         document.getElementById('customer-company').textContent = customer.company;
         document.getElementById('customer-birthdate').textContent = customer.birthdate;
+        
+        customerEmpty.style.display = 'none';
+        customerInfo.style.display = 'block';
+    } else {
+        customerEmpty.style.display = 'block';
+        customerInfo.style.display = 'none';
     }
 });
 
 document.getElementById('service_id').addEventListener('change', function() {
     const serviceId = this.value;
+    const serviceInfo = document.getElementById('service-info');
+    const serviceEmpty = document.getElementById('service-empty');
     
     if (serviceId && servicesData[serviceId]) {
         const service = servicesData[serviceId];
         document.getElementById('service-name').textContent = service.name;
         document.getElementById('service-price').textContent = service.price;
         document.getElementById('service-description').textContent = service.description;
+        
+        serviceEmpty.style.display = 'none';
+        serviceInfo.style.display = 'block';
+    } else {
+        serviceEmpty.style.display = 'block';
+        serviceInfo.style.display = 'none';
     }
 });
 
-// Инициализация при загрузке страницы
+document.getElementById('order_date').addEventListener('change', function() {
+    console.log('Выбрана дата:', this.value);
+});
+
 document.addEventListener('DOMContentLoaded', function() {
-    // Автоматически обновляем информацию при изменении выбора
     const customerSelect = document.getElementById('customer_id');
     const serviceSelect = document.getElementById('service_id');
     
-    // Триггерим события change для обновления информации
     customerSelect.dispatchEvent(new Event('change'));
     serviceSelect.dispatchEvent(new Event('change'));
 });

@@ -62,8 +62,7 @@
     </table>
     {% else %}
     <div class="alert alert-info mt-4">
-        <h4 class="alert-heading">Заказов пока нет!</h4>
-        <p class="mb-0">Вы еще не оформили ни одного заказа. <a href="{{ url_for('add_order') }}" class="alert-link">Создайте первый заказ</a>.</p>
+        <p class="mb-0">На данный момент нет оформленных заказов. <a href="{{ url_for('add_order') }}" class="alert-link">Оформить первый заказ</a>.</p>
     </div>
     {% endif %}
 </div>
