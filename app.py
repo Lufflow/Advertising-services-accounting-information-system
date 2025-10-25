@@ -163,7 +163,7 @@ def update_customer(customer_id):
             app.logger.warning(
                 f"Attempt to send a customer with an existing phone number in the database. Phone number: {phone_number}")
             flash("Клиент с таким номером телефона уже существует", 'danger')
-            return render_template('update_customer.html', form_data=request.form)
+            return render_template('update_customer.html', customer=customer)
 
         try:
             date_obj = datetime.strptime(date_of_birth, '%Y-%m-%d').date()
