@@ -13,6 +13,8 @@ class TestService(unittest.TestCase):
         self.client = app.test_client()
 
         with app.app_context():
+            db.engine.dispose()
+            db.session.remove()
             db.create_all()
 
     def tearDown(self):
@@ -97,7 +99,7 @@ class TestService(unittest.TestCase):
 
         response = self.client.post(f'/update-service/{service_id}', data={
             'service_name': 'Реклама у блогера',
-            'description': 'Рекламная интеграция',
+            'description': 'Рекламная СУПЕР-интеграция',
             'price': 30000
         })
 
@@ -107,7 +109,7 @@ class TestService(unittest.TestCase):
             update_service = db.session.get(Service, service_id)
             self.assertEqual(update_service.service_name, 'Реклама у блогера')
             self.assertEqual(update_service.description,
-                             'Рекламная интеграция')
+                             'Рекламная СУПЕР-интеграция')
             self.assertEqual(update_service.price, 30000)
 
     def test_update_service_empty_name(self):
