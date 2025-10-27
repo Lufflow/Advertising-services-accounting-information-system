@@ -213,6 +213,49 @@ class TestService(unittest.TestCase):
         response_text = response.data.decode('utf-8')
         self.assertIn("Пожалуйста, выберите услугу", response_text)
 
+    def test_update_order_with_nonexistent_customer(self):
+        with app.app_context():
+            order = Order(
+                customer_id=self.customer1_id,
+                service_id=self.service1_id,
+                order_date=datetime.now().date()
+            )
+            db.session.add(order)
+            db.session.commit()
+            order_id = order.id
+
+        response = self.client.post(f'/update-order/{order_id}', data={
+            'customer_id': '99999',
+            'service_id': str(self.service1_id),
+            'order_date': datetime.now().date().strftime('%Y-%m-%d')
+        })
+
+        self.assertEqual(response.status_code, 200)
+        response_text = response.data.decode('utf-8')
+        self.assertIn(
+            "Выбранный клиент не существует в базе данных", response_text)
+
+    def test_update_order_with_nonexistent_service(self):
+        with app.app_context():
+            order = Order(
+                customer_id=self.customer1_id,
+                service_id=self.service1_id,
+                order_date=datetime.now().date()
+            )
+            db.session.add(order)
+            db.session.commit()
+            order_id = order.id
+        response = self.client.post(f'/update-order/{order_id}', data={
+            'customer_id': str(self.customer1_id),
+            'service_id': '99999',
+            'order_date': datetime.now().date().strftime('%Y-%m-%d')
+        })
+
+        self.assertEqual(response.status_code, 200)
+        response_text = response.data.decode('utf-8')
+        self.assertIn(
+            "Выбранная услуга не существует в базе данных", response_text)
+
     def test_update_order_invalid_future_date(self):
         with app.app_context():
             order = Order(
