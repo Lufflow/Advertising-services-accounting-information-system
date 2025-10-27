@@ -14,34 +14,39 @@ class TestService(unittest.TestCase):
 
         with app.app_context():
             db.create_all()
+            # Создаем тестовые данные
             self.create_test_data()
 
     def create_test_data(self):
+        """Создает тестовых клиентов и услуги"""
+        # Создаем тестовых клиентов
         customer1 = Customer(
-            name="Иванов Иван Иванович",
-            phone_number="+79500000001",
-            date_of_birth=datetime(1990, 1, 1).date()
+            name="TEST_Клиент_1",
+            phone="+79990000001",
+            email="test1@example.com"
         )
         customer2 = Customer(
-            name="Петр Петров",
-            phone_number="+79500000002",
-            date_of_birth=datetime(1985, 5, 15).date()
+            name="TEST_Клиент_2",
+            phone="+79990000002",
+            email="test2@example.com"
         )
 
+        # Создаем тестовые услуги
         service1 = Service(
-            service_name="Реклама в соцсетях",
-            description="Продвижение в социальных сетях",
-            price=5000
+            service_name="TEST_Услуга_1",
+            description="TEST_Описание_услуги_1",
+            price=1000
         )
         service2 = Service(
-            service_name="Контекстная реклама",
-            description="Реклама в поисковых системах",
-            price=10000
+            service_name="TEST_Услуга_2",
+            description="TEST_Описание_услуги_2",
+            price=2000
         )
 
         db.session.add_all([customer1, customer2, service1, service2])
         db.session.commit()
 
+        # Сохраняем ID для использования в тестах
         self.customer1_id = customer1.id
         self.customer2_id = customer2.id
         self.service1_id = service1.id
@@ -63,8 +68,8 @@ class TestService(unittest.TestCase):
 
     def test_add_order_success(self):
         response = self.client.post('/add-order', data={
-            'customer_id': str(self.customer1_id),
-            'service_id': str(self.service1_id),
+            'customer_id': self.customer1_id,
+            'service_id': self.service1_id,
             'order_date': datetime.now().date().strftime('%Y-%m-%d')
         })
 
@@ -80,7 +85,7 @@ class TestService(unittest.TestCase):
     def test_add_order_empty_customer(self):
         response = self.client.post('/add-order', data={
             'customer_id': '',
-            'service_id': str(self.service1_id),
+            'service_id': self.service1_id,
             'order_date': datetime.now().date().strftime('%Y-%m-%d')
         })
 
@@ -90,7 +95,7 @@ class TestService(unittest.TestCase):
 
     def test_add_order_empty_service(self):
         response = self.client.post('/add-order', data={
-            'customer_id': str(self.customer1_id),
+            'customer_id': self.customer1_id,
             'service_id': '',
             'order_date': datetime.now().date().strftime('%Y-%m-%d')
         })
@@ -101,8 +106,8 @@ class TestService(unittest.TestCase):
 
     def test_add_order_with_nonexistent_customer(self):
         response = self.client.post('/add-order', data={
-            'customer_id': '99999',
-            'service_id': str(self.service1_id),
+            'customer_id': 99999,
+            'service_id': self.service1_id,
             'order_date': datetime.now().date().strftime('%Y-%m-%d')
         })
 
@@ -113,8 +118,8 @@ class TestService(unittest.TestCase):
 
     def test_add_order_with_nonexistent_service(self):
         response = self.client.post('/add-order', data={
-            'customer_id': str(self.customer1_id),
-            'service_id': '99999',
+            'customer_id': self.customer1_id,
+            'service_id': 99999,
             'order_date': datetime.now().date().strftime('%Y-%m-%d')
         })
 
@@ -126,8 +131,8 @@ class TestService(unittest.TestCase):
     def test_add_order_invalid_future_date(self):
         future_date = datetime.now().date() + timedelta(days=1)
         response = self.client.post('/add-order', data={
-            'customer_id': str(self.customer1_id),
-            'service_id': str(self.service1_id),
+            'customer_id': self.customer1_id,
+            'service_id': self.service1_id,
             'order_date': future_date.strftime('%Y-%m-%d')
         })
 
@@ -137,8 +142,8 @@ class TestService(unittest.TestCase):
 
     def test_add_order_invalid_format_date(self):
         response = self.client.post('/add-order', data={
-            'customer_id': str(self.customer1_id),
-            'service_id': str(self.service1_id),
+            'customer_id': self.customer1_id,
+            'service_id': self.service1_id,
             'order_date': 'invalid-date-format'
         })
 
@@ -158,8 +163,8 @@ class TestService(unittest.TestCase):
             order_id = order.id
 
         response = self.client.post(f'/update-order/{order_id}', data={
-            'customer_id': str(self.customer2_id),
-            'service_id': str(self.service2_id),
+            'customer_id': self.customer2_id,
+            'service_id': self.service2_id,
             'order_date': datetime.now().date().strftime('%Y-%m-%d')
         })
 
@@ -184,7 +189,7 @@ class TestService(unittest.TestCase):
 
         response = self.client.post(f'/update-order/{order_id}', data={
             'customer_id': '',
-            'service_id': str(self.service1_id),
+            'service_id': self.service1_id,
             'order_date': datetime.now().date().strftime('%Y-%m-%d')
         })
 
@@ -204,7 +209,7 @@ class TestService(unittest.TestCase):
             order_id = order.id
 
         response = self.client.post(f'/update-order/{order_id}', data={
-            'customer_id': str(self.customer1_id),
+            'customer_id': self.customer1_id,
             'service_id': '',
             'order_date': datetime.now().date().strftime('%Y-%m-%d')
         })
@@ -226,8 +231,8 @@ class TestService(unittest.TestCase):
 
         future_date = datetime.now().date() + timedelta(days=1)
         response = self.client.post(f'/update-order/{order_id}', data={
-            'customer_id': str(self.customer1_id),
-            'service_id': str(self.service1_id),
+            'customer_id': self.customer1_id,
+            'service_id': self.service1_id,
             'order_date': future_date.strftime('%Y-%m-%d')
         })
 
@@ -247,8 +252,8 @@ class TestService(unittest.TestCase):
             order_id = order.id
 
         response = self.client.post(f'/update-order/{order_id}', data={
-            'customer_id': str(self.customer1_id),
-            'service_id': str(self.service1_id),
+            'customer_id': self.customer1_id,
+            'service_id': self.service1_id,
             'order_date': 'invalid-date-format'
         })
 

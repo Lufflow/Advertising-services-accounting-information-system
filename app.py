@@ -411,6 +411,20 @@ def add_order():
             flash("Пожалуйста, выберите услугу", 'danger')
             return render_template('add_order.html', customers=customers, services=services, now=datetime.now)
 
+        customer = Customer.query.get(customer_id)
+        if not customer:
+            app.logger.warning(
+                f"Attempt to create an order with non-existent customer. Customer ID: {customer_id}")
+            flash("Выбранный клиент не существует в базе данных", 'danger')
+            return render_template('add_order.html', customers=customers, services=services, now=datetime.now)
+
+        service = Service.query.get(service_id)
+        if not service:
+            app.logger.warning(
+                f"Attempt to create an order with non-existent service. Service ID: {service_id}")
+            flash("Выбранная услуга не существует в базе данных", 'danger')
+            return render_template('add_order.html', customers=customers, services=services, now=datetime.now)
+
         is_valid, message = ValidDate.is_valid_order_date(order_date)
         if not is_valid:
             app.logger.warning(
