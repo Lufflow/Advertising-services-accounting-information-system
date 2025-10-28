@@ -60,6 +60,20 @@
             {% endfor %}
         </tbody>
     </table>
+    <div style="margin-top: 20px; text-align: center;">
+        {% if orders.has_prev %}
+            <a href="{{ url_for('list_orders', page=orders.prev_num) }}" class="btn btn-outline-info">Предыдущая</a>
+        {% endif %}
+        
+        <span style="position: relative;margin: 0 20px; top: -5px">Страница {{ orders.page }} из {{ orders.pages }}</span>
+        
+        {% if orders.has_next %}
+            <a href="{{ url_for('list_orders', page=orders.next_num) }}" class="btn btn-outline-info">Следующая</a>
+        {% endif %}
+    </div>
+    <p style="text-align: center">
+        <small>Показано {{ orders.items|length }} из {{ orders.total }} заказов</small>
+    </p>
     {% else %}
     <div class="alert alert-info mt-4">
         <p class="mb-0">На данный момент нет оформленных заказов. <a href="{{ url_for('add_order') }}" class="alert-link">Оформить первый заказ</a>.</p>

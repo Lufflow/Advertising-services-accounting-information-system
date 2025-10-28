@@ -88,8 +88,8 @@ def add_customer():
                 name=name,
                 date_of_birth=date_of_birth,
                 phone_number=phone_number,
-                email=email,
-                company=company
+                email=email if email else '',
+                company=company if company else ''
             )
 
             db.session.add(new_customer)
@@ -228,8 +228,15 @@ def delete_customer(customer_id):
 
 @app.route('/list-customers')
 def list_customers():
-    customers = Customer.query.all()
-    app.logger.info("The page with the list of all clients has been loaded")
+    page = request.args.get('page', 1, type=int)
+    customers = Customer.query.paginate(
+        page=page,
+        per_page=10,
+        error_out=False
+    )
+
+    app.logger.info(
+        f"The page with customers has been loaded. Page {page}, total pages: {customers.pages}")
     return render_template('list_customers.html', customers=customers)
 # Работа с клиентами -->
 
@@ -379,8 +386,15 @@ def delete_service(service_id):
 
 @app.route('/list-services')
 def list_services():
-    services = Service.query.all()
-    app.logger.info("The page with a list of all services has been loaded")
+    page = request.args.get('page', 1, type=int)
+    services = Service.query.paginate(
+        page=page,
+        per_page=8,
+        error_out=False
+    )
+
+    app.logger.info(
+        f"The page with services has been loaded. Page {page}, total pages: {services.pages}")
     return render_template('list_services.html', services=services)
 # Работа с услугами -->
 
@@ -561,10 +575,17 @@ def delete_order(order_id):
         return redirect(url_for('list_orders'))
 
 
-@app.route('/list-ordres')
+@app.route('/list-orders')
 def list_orders():
-    orders = Order.query.all()
-    app.logger.info("The page with the list of all orders has been loaded")
+    page = request.args.get('page', 1, type=int)
+    orders = Order.query.paginate(
+        page=page,
+        per_page=10,
+        error_out=False
+    )
+
+    app.logger.info(
+        f"The page with orders has been loaded. Page {page}, total pages: {orders.pages}")
     return render_template('list_orders.html', orders=orders)
 # Работа с заказми -->
 

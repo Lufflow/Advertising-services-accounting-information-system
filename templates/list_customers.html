@@ -24,8 +24,17 @@
         <tr>
             <td>{{ customer.name }}</td>
             <td>{{ customer.phone_number }}</td>
-            <td>{{ customer.email }}</td>
-            <td>{{ customer.company }}</td>
+            <td>{% if customer.email %}
+                    {{ customer.email }}
+                {% else %}
+                    Не указана
+                {% endif %}
+            </td>
+            <td>{% if customer.company %}
+                    {{ customer.company }}
+                {% else %}
+                    Не указана
+                {% endif %}</td>
             <td class="text-center">
                 <div class="btn-group" role="group">
                     <a href="{{ url_for('update_customer', customer_id=customer.id) }}" class="btn btn-warning rounded">Редактировать</a>
@@ -37,7 +46,21 @@
         </tr>
         {% endfor %}
         </html>
-</table> 
+    </table>
+    <div style="margin-top: 20px; text-align: center;">
+        {% if customers.has_prev %}
+            <a href="{{ url_for('list_customers', page=customers.prev_num) }}" class="btn btn-outline-info">Предыдущая</a>
+        {% endif %}
+        
+        <span style="position: relative;margin: 0 20px; top: -5px">Страница {{ customers.page }} из {{ customers.pages }}</span>
+        
+        {% if customers.has_next %}
+            <a href="{{ url_for('list_customers', page=customers.next_num) }}" class="btn btn-outline-info">Следующая</a>
+        {% endif %}
+    </div>
+    <p style="text-align: center">
+        <small>Показано {{ customers.items|length }} из {{ customers.total }} клиентов</small>
+    </p>
 {% else %}
     <div class="alert alert-info mt-4">
         <p class="mb-0">На данный момент в базе нет ни одного клиента. <a href="{{ url_for('add_customer') }}" class="alert-link">Добавить нового клиента</a>.</p>
