@@ -23,31 +23,25 @@
         <tbody>
             {% for order in orders %}
             <tr>
-                <!-- Клиент (компания при наличии) -->
                 <td>
                     <b>{{ order.customer.name }}</b>
                     {% if order.customer.company %}
-                    <br><small class="text-muted">{{ order.customer.company }}</small>
+                    <div class="text-muted">{{ order.customer.company }}</div>
                     {% endif %}
                 </td>
-                <!-- Контактные данные (телефон и эл.почта при наличии) -->
                 <td>
                     <div>{{ order.customer.phone_number }}</div>
                     <div class="text-muted small">{{ order.customer.email or 'Email не указан' }}</div>
                 </td>
-                <!-- Название услуги -->
                 <td>
-                    <strong>{{ order.service.service_name }}</strong>
+                    <b>{{ order.service.service_name }}</b>
                 </td>
-                <!-- Цена услуги -->
                 <td>
                     <span class="fw-bold text-success">{{ order.service.price }} руб.</span>
                 </td>
-                <!-- Дата оформления заказа -->
                 <td>
                     {{ order.order_date.strftime('%d.%m.%Y') }}
                 </td>
-                <!-- Кнопки управления заказами -->
                 <td class="text-center">
                     <div class="btn-group" role="group">
                         <a href="{{ url_for('update_order', order_id=order.id) }}" class="btn btn-warning rounded">Редактировать</a>
