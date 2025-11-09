@@ -18,9 +18,14 @@ class ValidDate:
         try:
             birth_date = datetime.strptime(date_str, '%Y-%m-%d').date()
             today = datetime.now().date()
+            impossible_date = datetime.strptime(
+                '1905-01-01', '%Y-%m-%d').date()
 
             if birth_date > today:
                 return False, "Дата рождения не может быть в будущем"
+
+            if birth_date < impossible_date:
+                return False, "Недопустимая дата рождения (позднее 1905г.)"
 
             age = today.year - birth_date.year
 

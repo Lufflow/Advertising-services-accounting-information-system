@@ -22,7 +22,10 @@
     <tbody>
         {% for customer in customers %}
         <tr>
-            <td>{{ customer.name }}</td>
+            <td>
+                <div>{{ customer.name }}</div>
+                <div class="text-muted small">{{ customer.date_of_birth }}</div>
+            </td>
             <td>{{ customer.phone_number }}</td>
             <td>{% if customer.email %}
                     {{ customer.email }}
@@ -45,7 +48,6 @@
             </td>
         </tr>
         {% endfor %}
-        </html>
     </table>
     <div style="margin-top: 20px; text-align: center;">
         {% if customers.has_prev %}
