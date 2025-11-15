@@ -1,0 +1,14 @@
+{
+    "SECRET_KEY": "some-secret-key-XD",
+    "SQLALCHEMY_DATABASE_URI": "sqlite:///flask.db",
+    "HOST": "127.0.0.1",
+    "PORT": 8089,
+    "LOG_LEVEL": "INFO",
+    "PER_PAGE_CUSTOMERS": 10,
+    "PER_PAGE_SERVICES": 8,
+    "PER_PAGE_ORDERS": 10,
+    "SQLALCHEMY_ENGINE_OPTIONS": {
+        "pool_pre_ping": true,
+        "pool_recycle": 600
+    }
+}

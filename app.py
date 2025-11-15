@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from flask_migrate import Migrate
 from models import db, Customer, Service, Order
-from config import Config
+import json
 from logger_config import setup_logger
 from health_check_config import check_db, check_logging
 from validation import is_valid_phone, ValidDate, is_empty_field
@@ -9,10 +9,27 @@ from datetime import datetime
 
 
 app = Flask(__name__)
-app.config.from_object(Config)
+try:
+    with open('config.json', 'r') as json_config:
+        config_data = json.load(json_config)
+        app.config.update(config_data)
+
+except FileNotFoundError:
+    app.config['SECRET_KEY'] = 'something-goes-wrong-use-this-key'
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///flask.db'
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+        'pool_pre_ping': True,
+        'pool_recycle': 600
+    }
+
 setup_logger(app)
 db.init_app(app)
 migrate = Migrate(app, db)
+
+PER_PAGE_CUSTOMERS = app.config['PER_PAGE_CUSTOMERS']
+PER_PAGE_SERVICES = app.config['PER_PAGE_SERVICES']
+PER_PAGE_ORDERS = app.config['PER_PAGE_ORDERS']
 
 
 @app.route('/health')
@@ -231,7 +248,7 @@ def list_customers():
     page = request.args.get('page', 1, type=int)
     customers = Customer.query.paginate(
         page=page,
-        per_page=10,
+        per_page=PER_PAGE_CUSTOMERS,
         error_out=False
     )
 
@@ -389,7 +406,7 @@ def list_services():
     page = request.args.get('page', 1, type=int)
     services = Service.query.paginate(
         page=page,
-        per_page=8,
+        per_page=PER_PAGE_SERVICES,
         error_out=False
     )
 
@@ -580,7 +597,7 @@ def list_orders():
     page = request.args.get('page', 1, type=int)
     orders = Order.query.paginate(
         page=page,
-        per_page=10,
+        per_page=PER_PAGE_ORDERS,
         error_out=False
     )
 
