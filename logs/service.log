@@ -497,3 +497,6 @@
 2025-11-15 14:50:53,049 INFO: The logger is configured. Logging level: INFO [in z:\Work Files\Programming\adverstising2\logger_config.py:26]
 2025-11-15 14:50:56,794 INFO: The page with customers has been loaded. Page 1, total pages: 1 [in z:\Work Files\Programming\adverstising2\app.py:256]
 2025-11-15 14:51:19,909 INFO: The logger is configured. Logging level: INFO [in z:\Work Files\Programming\adverstising2\logger_config.py:26]
+2025-11-15 15:03:26,074 INFO: The logger is configured. Logging level: INFO [in z:\Work Files\Programming\adverstising2\logger_config.py:26]
+2025-11-15 15:03:26,735 INFO: The logger is configured. Logging level: INFO [in z:\Work Files\Programming\adverstising2\logger_config.py:26]
+2025-11-15 15:03:28,978 INFO: The page with services has been loaded. Page 1, total pages: 3 [in z:\Work Files\Programming\adverstising2\app.py:413]
